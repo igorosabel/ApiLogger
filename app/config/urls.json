@@ -1,3 +1,76 @@
 {
-  "urls": []
+  "urls": [
+    {
+      "id": "pages",
+      "module": "home",
+      "urls": [
+        {
+          "id": "closed",
+          "url": "/closed",
+          "module": "home",
+          "action": "closed",
+          "comment": "Página temporal, sitio cerrado",
+          "layout": "blank"
+        },
+        {
+          "id": "index",
+          "url": "/",
+          "module": "home",
+          "action": "index",
+          "comment": "Home pública"
+        },
+        {
+          "id": "notFound",
+          "url": "/not-found",
+          "module": "home",
+          "action": "notFound",
+          "comment": "Página de error 404"
+        }
+      ]
+    },
+    {
+      "id": "api",
+      "module": "api",
+      "type": "json",
+      "prefix": "/api",
+      "urls": [
+        {
+          "id": "register",
+          "url": "/register",
+          "action": "register",
+          "comment": "Función para registrar un nuevo usuario"
+        },
+        {
+          "id": "login",
+          "url": "/login",
+          "action": "login",
+          "comment": "Función para iniciar sesión"
+        },
+        {
+          "id": "getEntries",
+          "url": "/getEntries",
+          "action": "getEntries",
+          "comment": "Función para obtener las entradas de un día concreto"
+        },
+        {
+          "id": "getTags",
+          "url": "/getTags",
+          "action": "getTags",
+          "comment": "Función para obtener la lista de tags de un usuario"
+        },
+        {
+          "id": "saveEntry",
+          "url": "/saveEntry",
+          "action": "saveEntry",
+          "comment": "Función para guardar una entrada"
+        },
+        {
+          "id": "getTagEntries",
+          "url": "/getTagEntries",
+          "action": "getTagEntries",
+          "comment": "Función para obtener las entradas con una tag concreta"
+        }
+      ]
+    }
+  ]
 }
