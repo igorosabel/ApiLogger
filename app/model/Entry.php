@@ -41,4 +41,15 @@ class Entry extends OBase{
 
     parent::load($table_name, $model);
   }
+
+  public function toArray(){
+    return [
+      this.get('id'),
+      this.get('title'),
+      this.get('slug'),
+      this.get('body'),
+      this.get('created_at', 'd/m/Y'),
+      this.get('updated_at', 'd/m/Y')
+    ];
+  }
 }

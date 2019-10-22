@@ -43,6 +43,7 @@ class api extends OController{
       $this->getTemplate()->add('id',       $id);
       $this->getTemplate()->add('username', $username);
       $this->getTemplate()->add('token',    $token);
+    }
   }
 
   /*
@@ -90,7 +91,21 @@ class api extends OController{
   /*
    * Función para obtener las entradas de un día concreto
    */
-  function getEntries($req){}
+  function getEntries($req){
+    $status = 'ok';
+    if ($req['filter']['status']!=='ok'){
+      $status = 'error';
+    }
+    $list = 'null';
+
+    if ($status=='ok'){
+      $id_user = $req['filter']['id'];
+      $list = $this->web_service->getEntries($id_user);
+    }
+
+    $this->getTemplate()->add('status', $status);
+    $this->getTemplate()->add('list',   $list);
+  }
   /*
    * Función para obtener la lista de tags de un usuario
    */
