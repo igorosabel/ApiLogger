@@ -89,7 +89,7 @@ class api extends OController{
   }
 
   /*
-   * Función para obtener las entradas de un día concreto
+   * Función para obtener las entradas
    */
   function getEntries($req){
     $status = 'ok';
@@ -104,16 +104,94 @@ class api extends OController{
     }
 
     $this->getTemplate()->add('status', $status);
-    $this->getTemplate()->add('list',   $list);
+    $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
+
+  /*
+   * Función para obtener el detalle de una entrada
+   */
+  function getEntry($req){
+    $status = 'ok';
+    $id     = Base::getParam('id', $req['url_params'], false);
+    if ($req['filter']['status']!=='ok' || $id===false){
+      $status = 'error';
+    }
+    $entry = 'null';
+
+    if ($status=='ok'){
+      $e = new Entry();
+      if ($e->find(['id'=>$id])){
+        if ($e->get('id_user')==$req['filter']['id']){
+          $entry = json_encode($e->toArray());
+        }
+        else{
+          $status = 'error';
+        }
+      }
+      else{
+        $status = 'error';
+      }
+    }
+
+    $this->getTemplate()->add('status', $status);
+    $this->getTemplate()->add('entry',  $entry, 'nourlencode');
+  }
+
   /*
    * Función para obtener la lista de tags de un usuario
    */
-  function getTags($req){}
+  function getTags($req){
+    $status = 'ok';
+    if ($req['filter']['status']!=='ok'){
+      $status = 'error';
+    }
+    $list = 'null';
+
+    if ($status=='ok'){
+      $id_user = $req['filter']['id'];
+      $list = $this->web_service->getTags($id_user);
+    }
+
+    $this->getTemplate()->add('status', $status);
+    $this->getTemplate()->add('list',   $list, 'nourlencode');
+  }
+ 
   /*
    * Función para guardar una entrada
    */
-  function saveEntry($req){}
+  function saveEntry($req){
+	  $status = 'ok';
+	  if ($req['filter']['status']!=='ok'){
+        $status = 'error';
+      }
+      
+      if ($status=='ok'){
+	    $id    = Base::getParam('id',    $req['url_params'], false);
+        $title = Base::getParam('title', $req['url_params'], false);
+        $body  = Base::getParam('body',  $req['url_params'], false);
+        $tags  = Base::getParam('tags',  $req['url_params'], false);
+        
+        if ($id===false || $title===false || $body===false || $tags===false){
+	        $status = 'error';
+        }
+        else{
+	        $entry = new Entry();
+	        if ($id!==null){
+		        $entry->find(['id'=>$id]);
+	        }
+	        $entry->set('id_user', $req['filter']['id']);
+	        $entry->set('title',   $title);
+	        $entry->set('slug',    Base::slugify($title));
+	        $entry->set('body',    $body);
+	        $entry->save();
+	        
+	        $this->web_service->saveTags($entry, $tags);
+        }
+      }
+	  
+	  $this->getTemplate()->add('status', $status);
+  }
+ 
   /*
    * Función para obtener las entradas con una tag concreta
    */

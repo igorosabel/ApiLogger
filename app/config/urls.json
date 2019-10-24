@@ -51,7 +51,7 @@
           "url": "/getEntries",
           "action": "getEntries",
           "filter": "loginFilter",
-          "comment": "Función para obtener las entradas de un día concreto"
+          "comment": "Función para obtener las entradas"
         },
         {
           "id": "getTags",
@@ -59,6 +59,13 @@
           "action": "getTags",
           "filter": "loginFilter",
           "comment": "Función para obtener la lista de tags de un usuario"
+        },
+        {
+          "id": "getEntry",
+          "url": "/getEntry",
+          "action": "getEntry",
+          "filter": "loginFilter",
+          "comment": "Función para obtener el detalle de una entrada"
         },
         {
           "id": "saveEntry",

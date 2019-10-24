@@ -21,6 +21,13 @@ class Entry extends OBase{
         'size' => 100,
         'comment' => 'Título de la entrada'
       ],
+      'slug' => [
+        'type'    => Base::TEXT,
+        'nullable' => false,
+        'default' => null,
+        'size' => 100,
+        'comment' => 'Slug del título de la entrada'
+      ],
       'body' => [
         'type'    => Base::LONGTEXT,
         'nullable' => true,
@@ -42,14 +49,43 @@ class Entry extends OBase{
     parent::load($table_name, $model);
   }
 
+  private $tags = null;
+
+  public function getTags(){
+    if (is_null($this->tags)){
+      $this->loadTags();
+    }
+    return $this->tags;
+  }
+
+  public function setTags($tags){
+    $this->tags = $tags;
+  }
+
+  public function loadTags(){
+    $sql = "SELECT * FROM `tag` WHERE `id` IN (SELECT `id_tag` FROM `entry_tag` WHERE `id_entry` = ?) ORDER BY `name` ASC";
+    $this->db->query($sql, [$this->get('id')]);
+    $list = [];
+
+    while ($res = $this->db->next()){
+      $tag = new Tag();
+      $tag->update($res);
+
+      array_push($list, $tag->toArray());
+    }
+
+    $this->setTags($list);
+  }
+
   public function toArray(){
     return [
-      this.get('id'),
-      this.get('title'),
-      this.get('slug'),
-      this.get('body'),
-      this.get('created_at', 'd/m/Y'),
-      this.get('updated_at', 'd/m/Y')
+      'id'        => $this->get('id'),
+      'title'     => $this->get('title'),
+      'slug'      => $this->get('slug'),
+      'body'      => $this->get('body'),
+      'createdAt' => $this->get('created_at', 'd/m/Y'),
+      'updatedAt' => $this->get('updated_at', 'd/m/Y'),
+      'tags'      => $this->getTags()
     ];
   }
 }
