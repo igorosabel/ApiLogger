@@ -3,7 +3,8 @@
     "host": "localhost",
     "user": "logger",
     "pass": "0%Cq5aq7",
-    "name": "logger"
+    "name": "logger",
+    "charset": "utf8mb4"
   },
   "base_url": "https://apilogger.osumi.es",
   "admin_email": "inigo.gorosabel@gmail.com",
