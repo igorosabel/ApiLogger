@@ -95,4 +95,20 @@ class webService extends OService{
     $sql = "DELETE FROM `tag` WHERE `id` NOT IN (SELECT DISTINCT(`id_tag`) FROM `entry_tag` WHERE `id_entry` IN (SELECT `id` FROM `entry` WHERE `id_user` = ?))";
     $db->query($sql, [$id_user]);
   }
+  
+  public function getTagEntries($id_tag){
+    $db = $this->getController()->getDb();
+    $sql = "SELECT * FROM `entry` WHERE `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` = ?) ORDER BY `updated_at` DESC";
+    $db->query($sql, [$id_tag]);
+    $list = [];
+
+    while ($res = $db->next()){
+      $entry = new Entry();
+      $entry->update($res);
+
+      array_push($list, $entry->toArray());
+    }
+
+    return json_encode($list);
+  }
 }

@@ -76,6 +76,12 @@ class Entry extends OBase{
 
     $this->setTags($list);
   }
+  
+  public function deleteFull(){
+	  $sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
+	  $this->db->query($sql, [$this->get('id')]);
+	  $this->delete();
+  }
 
   public function toArray(){
     return [

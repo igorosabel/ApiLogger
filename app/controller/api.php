@@ -195,5 +195,63 @@ class api extends OController{
   /*
    * Función para obtener las entradas con una tag concreta
    */
-  function getTagEntries($req){}
+  function getTagEntries($req){
+	$status = 'ok';
+	if ($req['filter']['status']!=='ok'){
+	  $status = 'error';
+	}
+	$tag  = 'null';
+	$list = 'null';
+
+	if ($status=='ok'){
+      $id = Base::getParam('id', $req['url_params'], false);
+      if ($id===false){
+	      $status = 'error';
+      }
+      else{
+	      $t = new Tag();
+	      $t->find(['id'=>$id]);
+	      $tag = json_encode($t->toArray());
+	      $list = $this->web_service->getTagEntries($id);
+      }
+	}
+
+	$this->getTemplate()->add('status', $status);
+	$this->getTemplate()->add('tag',    $tag,  'nourlencode');
+    $this->getTemplate()->add('list',   $list, 'nourlencode');
+  }
+ 
+  /*
+   * Función para borrar una entrada
+   */
+  function deleteEntry($req){
+	$status = 'ok';
+	if ($req['filter']['status']!=='ok'){
+	  $status = 'error';
+	}
+	
+	if ($status=='ok'){
+      $id = Base::getParam('id', $req['url_params'], false);
+      if ($id===false){
+	      $status = 'error';
+      }
+      else{
+	    $entry = new Entry();
+	    if ($entry->find(['id'=>$id])){
+		   if ($entry->get('id_user')==$req['filter']['id']){
+			   $entry->deleteFull();
+			   $this->web_service->cleanEmptyTags($req['filter']['id']);
+		   }
+		   else{
+			   $status = 'error';
+		   }
+	    }
+	    else{
+		    $status = 'error';
+	    }
+	  }
+	}
+	
+	$this->getTemplate()->add('status', $status);
+  }
 }

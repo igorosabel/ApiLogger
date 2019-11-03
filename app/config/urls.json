@@ -80,6 +80,13 @@
           "action": "getTagEntries",
           "filter": "loginFilter",
           "comment": "Función para obtener las entradas con una tag concreta"
+        },
+        {
+          "id": "deleteEntry",
+          "url": "/deleteEntry",
+          "action": "deleteEntry",
+          "filter": "loginFilter",
+          "comment": "Función para borrar una entrada"
         }
       ]
     }
