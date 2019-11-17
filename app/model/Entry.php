@@ -77,6 +77,34 @@ class Entry extends OBase{
     $this->setTags($list);
   }
   
+  private $images = null;
+  
+  public function getImages(){
+	if (is_null($this->images)){
+		$this->loadImages();
+	}
+	return $this->images;
+  }
+  
+  public function setImages($images){
+	  $this->images = $images;
+  }
+  
+  public function loadImages(){
+	  $sql = "SELECT * FROM `image` WHERE `id_entry` = ?";
+	  $this->db->query($sql, [$this->get('id')]);
+	  $list = [];
+	  
+	  while ($res = $this->db->next()){
+		  $image = new Image();
+		  $image->update($res);
+		  
+		  array_push($list, $image->toArray());
+	  }
+	  
+	  $this->setImages($list);
+  }
+  
   public function deleteFull(){
 	  $sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);

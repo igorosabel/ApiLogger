@@ -87,6 +87,13 @@
           "action": "deleteEntry",
           "filter": "loginFilter",
           "comment": "Función para borrar una entrada"
+        },
+        {
+          "id": "getEntryImages",
+          "url": "/getEntryImages",
+          "action": "getEntryImages",
+          "filter": "loginFilter",
+          "comment": "Función para obtener las imágenes de una entrada concreta"
         }
       ]
     }

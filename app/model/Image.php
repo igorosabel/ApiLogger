@@ -28,4 +28,12 @@ class Image extends OBase{
 
     parent::load($table_name, $model);
   }
+  
+  public function toArray(){
+    return [
+      'id'        => $this->get('id'),
+      'createdAt' => $this->get('created_at', 'd/m/Y'),
+      'updatedAt' => $this->get('updated_at', 'd/m/Y')
+    ];
+  }
 }
