@@ -1,18 +1,18 @@
 <?php
-class Image extends OBase{
+class Photo extends OBase{
   function __construct(){
-    $table_name  = 'image';
+    $table_name  = 'photo';
     $model = [
       'id' => [
         'type'    => Base::PK,
-        'comment' => 'Id única de cada imagen'
+        'comment' => 'Id única de cada foto'
       ],
       'id_entry' => [
         'type'    => Base::NUM,
         'nullable' => false,
         'default' => null,
         'ref' => 'entry.id',
-        'comment' => 'Id de la entrada en la que va la imagen'
+        'comment' => 'Id de la entrada en la que va la foto'
       ],
       'created_at' => [
         'type'    => Base::CREATED,

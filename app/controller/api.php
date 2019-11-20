@@ -256,9 +256,9 @@ class api extends OController{
   }
  
   /*
-   * Función para obtener las imágenes de una entrada concreta
+   * Función para obtener las fotos de una entrada concreta
    */
-  function getEntryImages($req){
+  function getPhotos($req){
 	$status = 'ok';
 	if ($req['filter']['status']!=='ok'){
 	  $status = 'error';
@@ -274,7 +274,7 @@ class api extends OController{
 	    $entry = new Entry();
 	    if ($entry->find(['id'=>$id])){
 		   if ($entry->get('id_user')==$req['filter']['id']){
-			   $list = json_encode($entry->getImages());
+			   $list = json_encode($entry->getPhotos());
 		   }
 		   else{
 			   $status = 'error';

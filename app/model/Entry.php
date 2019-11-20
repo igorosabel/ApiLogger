@@ -77,32 +77,32 @@ class Entry extends OBase{
     $this->setTags($list);
   }
   
-  private $images = null;
+  private $photos = null;
   
-  public function getImages(){
-	if (is_null($this->images)){
-		$this->loadImages();
+  public function getPhotos(){
+	if (is_null($this->photos)){
+		$this->loadPhotos();
 	}
-	return $this->images;
+	return $this->photos;
   }
   
-  public function setImages($images){
-	  $this->images = $images;
+  public function setPhotos($photos){
+	  $this->photos = $photos;
   }
   
-  public function loadImages(){
-	  $sql = "SELECT * FROM `image` WHERE `id_entry` = ?";
+  public function loadPhotos(){
+	  $sql = "SELECT * FROM `photo` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);
 	  $list = [];
 	  
 	  while ($res = $this->db->next()){
-		  $image = new Image();
-		  $image->update($res);
+		  $photo = new Photo();
+		  $photo->update($res);
 		  
-		  array_push($list, $image->toArray());
+		  array_push($list, $photo->toArray());
 	  }
 	  
-	  $this->setImages($list);
+	  $this->setPhotos($list);
   }
   
   public function deleteFull(){
