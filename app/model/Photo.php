@@ -29,6 +29,22 @@ class Photo extends OBase{
     parent::load($table_name, $model);
   }
   
+  public function getData(){
+	  global $c;
+	  
+	  $route = $c->getDir('photos').$this->get('id');
+	  return file_get_contents($route);
+  }
+  
+  public function getImage(){
+	  $data = $this->getData();
+	  $data_parts = explode(';', $data);
+	  return [
+		  'type' => str_ireplace('data:', '', $data_parts[0]),
+		  'image' => str_ireplace('base64,', '', $data_parts[1])
+	  ];
+  }
+  
   public function toArray(){
     return [
       'id'        => $this->get('id'),

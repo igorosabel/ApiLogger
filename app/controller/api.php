@@ -285,8 +285,79 @@ class api extends OController{
 	    }
 	  }
 	}
-	
+
 	$this->getTemplate()->add('status', $status);
 	$this->getTemplate()->add('list',   $list, 'nourlencode');
+  }
+ 
+  /*
+   * Función para añadir una foto a una entrada
+   */
+  function uploadPhoto($req){
+	$status = 'ok';
+	if ($req['filter']['status']!=='ok'){
+	  $status = 'error';
+	}
+	$id = 'null';
+	$created_at = 'null';
+	$updated_at = 'null';
+	
+	if ($status=='ok'){
+      $id    = Base::getParam('id',    $req['url_params'], false);
+      $photo = Base::getParam('photo', $req['url_params'], false);
+      if ($id===false || $photo===false){
+	      $status = 'error';
+      }
+      else{
+	    $entry = new Entry();
+	    if ($entry->find(['id'=>$id])){
+		   if ($entry->get('id_user')==$req['filter']['id']){
+			   $new_photo = $this->web_service->addPhoto($entry, $photo);
+			   
+			   $id = $new_photo['id'];
+			   $created_at = '"'.$new_photo['createdAt'].'"';
+			   $updated_at = '"'.$new_photo['updatedAt'].'"';
+		   }
+		   else{
+			   $status = 'error';
+		   }
+	    }
+	    else{
+		    $status = 'error';
+	    }
+	  }
+	}
+	
+	$this->getTemplate()->add('status',     $status);
+	$this->getTemplate()->add('id',         $id,         'nourlencode');
+	$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
+	$this->getTemplate()->add('updated_at', $updated_at, 'nourlencode');
+  }
+
+  /*
+   * Función para obtener una foto
+   */
+  function getEntryPhoto($req){
+	$id = Base::getParam('id', $req, false);
+
+	if ($id===false){
+		echo 'error';
+		exit();
+	}
+	else{
+		$p = new Photo();
+		if ($p->find(['id'=>$id])){
+			$photo_data = $p->getImage();
+			header('Content-type: '.$photo_data['type']);
+			echo base64_decode($photo_data['image']);
+			exit();
+		}
+		else{
+			echo 'error';
+			exit();
+		}
+	}
+	
+	$this->getTemplate()->add('photo', $photo, 'nourlencode');
   }
 }

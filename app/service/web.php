@@ -111,4 +111,15 @@ class webService extends OService{
 
     return json_encode($list);
   }
+  
+  public function addPhoto($entry, $data){
+	$photo = new Photo();
+	$photo->set('id_entry', $entry->get('id'));
+	$photo->save();
+
+	$route = $this->getController()->getConfig()->getDir('photos').$photo->get('id');
+	file_put_contents($route, $data);
+	
+	return $photo->toArray();
+  }
 }

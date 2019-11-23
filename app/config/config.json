@@ -10,5 +10,8 @@
   "admin_email": "inigo.gorosabel@gmail.com",
   "default_title": "API Logger",
   "lang": "es",
+  "dir": {
+    "photos": "{{base}}photos/"
+  },
   "debug": false
 }

@@ -94,6 +94,19 @@
           "action": "getPhotos",
           "filter": "loginFilter",
           "comment": "Función para obtener las fotos de una entrada concreta"
+        },
+        {
+          "id": "uploadPhoto",
+          "url": "/uploadPhoto",
+          "action": "uploadPhoto",
+          "filter": "loginFilter",
+          "comment": "Función para añadir una foto a una entrada"
+        },
+        {
+          "id": "getEntryPhoto",
+          "url": "/getEntryPhoto/:id",
+          "action": "getEntryPhoto",
+          "comment": "Función para obtener una foto"
         }
       ]
     }
