@@ -34,6 +34,12 @@ class Entry extends OBase{
         'default' => null,
         'comment' => 'Cuerpo de la entrada'
       ],
+      'is_public' => [
+        'type'    => Base::BOOL,
+        'nullable' => false,
+        'default' => false,
+        'comment' => 'Indica si la entrada es pública 1 o no 0'
+      ],
       'created_at' => [
         'type'    => Base::CREATED,
         'comment' => 'Fecha de creación del registro'
@@ -76,35 +82,35 @@ class Entry extends OBase{
 
     $this->setTags($list);
   }
-  
+
   private $photos = null;
-  
+
   public function getPhotos(){
 	if (is_null($this->photos)){
 		$this->loadPhotos();
 	}
 	return $this->photos;
   }
-  
+
   public function setPhotos($photos){
 	  $this->photos = $photos;
   }
-  
+
   public function loadPhotos(){
 	  $sql = "SELECT * FROM `photo` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);
 	  $list = [];
-	  
+
 	  while ($res = $this->db->next()){
 		  $photo = new Photo();
 		  $photo->update($res);
-		  
+
 		  array_push($list, $photo->toArray());
 	  }
-	  
+
 	  $this->setPhotos($list);
   }
-  
+
   public function deleteFull(){
 	  $sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);

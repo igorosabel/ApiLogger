@@ -68,6 +68,12 @@
           "comment": "Función para obtener el detalle de una entrada"
         },
         {
+          "id": "getPublicEntry",
+          "url": "/getPublicEntry",
+          "action": "getPublicEntry",
+          "comment": "Función para obtener el detalle de una entrada pública"
+        },
+        {
           "id": "saveEntry",
           "url": "/saveEntry",
           "action": "saveEntry",

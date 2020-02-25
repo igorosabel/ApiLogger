@@ -138,6 +138,33 @@ class api extends OController{
   }
 
   /*
+   * Función para obtener el detalle de una entrada pública
+   */
+  function getPublicEntry($req){
+    $status = 'ok';
+    $id     = Base::getParam('id', $req['url_params'], false);
+    $entry = 'null';
+
+    if ($status=='ok'){
+      $e = new Entry();
+      if ($e->find(['id'=>$id])){
+        if ($e->get('is_public')){
+          $entry = json_encode($e->toArray());
+        }
+        else{
+          $status = 'error';
+        }
+      }
+      else{
+        $status = 'error';
+      }
+    }
+
+    $this->getTemplate()->add('status', $status);
+    $this->getTemplate()->add('entry',  $entry, 'nourlencode');
+  }
+
+  /*
    * Función para obtener la lista de tags de un usuario
    */
   function getTags($req){
@@ -155,7 +182,7 @@ class api extends OController{
     $this->getTemplate()->add('status', $status);
     $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
- 
+
   /*
    * Función para guardar una entrada
    */
@@ -164,13 +191,13 @@ class api extends OController{
 	  if ($req['filter']['status']!=='ok'){
         $status = 'error';
       }
-      
+
       if ($status=='ok'){
 	    $id    = Base::getParam('id',    $req['url_params'], false);
         $title = Base::getParam('title', $req['url_params'], false);
         $body  = Base::getParam('body',  $req['url_params'], false);
         $tags  = Base::getParam('tags',  $req['url_params'], false);
-        
+
         if ($id===false || $title===false || $body===false || $tags===false){
 	        $status = 'error';
         }
@@ -184,14 +211,14 @@ class api extends OController{
 	        $entry->set('slug',    Base::slugify($title));
 	        $entry->set('body',    $body);
 	        $entry->save();
-	        
+
 	        $this->web_service->saveTags($entry, $tags);
         }
       }
-	  
+
 	  $this->getTemplate()->add('status', $status);
   }
- 
+
   /*
    * Función para obtener las entradas con una tag concreta
    */
@@ -220,7 +247,7 @@ class api extends OController{
 	$this->getTemplate()->add('tag',    $tag,  'nourlencode');
     $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
- 
+
   /*
    * Función para borrar una entrada
    */
@@ -229,7 +256,7 @@ class api extends OController{
 	if ($req['filter']['status']!=='ok'){
 	  $status = 'error';
 	}
-	
+
 	if ($status=='ok'){
       $id = Base::getParam('id', $req['url_params'], false);
       if ($id===false){
@@ -251,10 +278,10 @@ class api extends OController{
 	    }
 	  }
 	}
-	
+
 	$this->getTemplate()->add('status', $status);
   }
- 
+
   /*
    * Función para obtener las fotos de una entrada concreta
    */
@@ -264,7 +291,7 @@ class api extends OController{
 	  $status = 'error';
 	}
 	$list = '[]';
-	
+
 	if ($status=='ok'){
       $id = Base::getParam('id', $req['url_params'], false);
       if ($id===false){
@@ -289,7 +316,7 @@ class api extends OController{
 	$this->getTemplate()->add('status', $status);
 	$this->getTemplate()->add('list',   $list, 'nourlencode');
   }
- 
+
   /*
    * Función para añadir una foto a una entrada
    */
@@ -301,7 +328,7 @@ class api extends OController{
 	$id = 'null';
 	$created_at = 'null';
 	$updated_at = 'null';
-	
+
 	if ($status=='ok'){
       $id    = Base::getParam('id',    $req['url_params'], false);
       $photo = Base::getParam('photo', $req['url_params'], false);
@@ -313,7 +340,7 @@ class api extends OController{
 	    if ($entry->find(['id'=>$id])){
 		   if ($entry->get('id_user')==$req['filter']['id']){
 			   $new_photo = $this->web_service->addPhoto($entry, $photo);
-			   
+
 			   $id = $new_photo['id'];
 			   $created_at = '"'.$new_photo['createdAt'].'"';
 			   $updated_at = '"'.$new_photo['updatedAt'].'"';
@@ -327,7 +354,7 @@ class api extends OController{
 	    }
 	  }
 	}
-	
+
 	$this->getTemplate()->add('status',     $status);
 	$this->getTemplate()->add('id',         $id,         'nourlencode');
 	$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
@@ -357,7 +384,7 @@ class api extends OController{
 			exit();
 		}
 	}
-	
+
 	$this->getTemplate()->add('photo', $photo, 'nourlencode');
   }
 }
