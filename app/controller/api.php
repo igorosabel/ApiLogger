@@ -11,8 +11,8 @@ class api extends OController{
    */
   function register($req){
     $status   = 'ok';
-    $username = Base::getParam('username', $req['url_params'], false);
-    $pass     = Base::getParam('pass',     $req['url_params'], false);
+    $username = OTools::getParam('username', $req['params'], false);
+    $pass     = OTools::getParam('pass',     $req['params'], false);
 
     $id    = 'null';
     $token = '';
@@ -51,8 +51,8 @@ class api extends OController{
    */
   function login($req){
     $status   = 'ok';
-    $username = Base::getParam('username', $req['url_params'], false);
-    $pass     = Base::getParam('pass',     $req['url_params'], false);
+    $username = OTools::getParam('username', $req['params'], false);
+    $pass     = OTools::getParam('pass',     $req['params'], false);
 
     $id    = 'null';
     $token = '';
@@ -93,13 +93,13 @@ class api extends OController{
    */
   function getEntries($req){
     $status = 'ok';
-    if ($req['filter']['status']!=='ok'){
+    if ($req['loginFilter']['status']!=='ok'){
       $status = 'error';
     }
     $list = '[]';
 
     if ($status=='ok'){
-      $id_user = $req['filter']['id'];
+      $id_user = $req['loginFilter']['id'];
       $list = $this->web_service->getEntries($id_user);
     }
 
@@ -112,8 +112,8 @@ class api extends OController{
    */
   function getEntry($req){
     $status = 'ok';
-    $id     = Base::getParam('id', $req['url_params'], false);
-    if ($req['filter']['status']!=='ok' || $id===false){
+    $id     = OTools::getParam('id', $req['params'], false);
+    if ($req['loginFilter']['status']!=='ok' || $id===false){
       $status = 'error';
     }
     $entry = 'null';
@@ -121,7 +121,7 @@ class api extends OController{
     if ($status=='ok'){
       $e = new Entry();
       if ($e->find(['id'=>$id])){
-        if ($e->get('id_user')==$req['filter']['id']){
+        if ($e->get('id_user')==$req['loginFilter']['id']){
           $entry = json_encode($e->toArray());
         }
         else{
@@ -142,7 +142,7 @@ class api extends OController{
    */
   function getPublicEntry($req){
     $status = 'ok';
-    $id     = Base::getParam('id', $req['url_params'], false);
+    $id     = OTools::getParam('id', $req['params'], false);
     $entry = 'null';
 
     if ($status=='ok'){
@@ -169,13 +169,13 @@ class api extends OController{
    */
   function getTags($req){
     $status = 'ok';
-    if ($req['filter']['status']!=='ok'){
+    if ($req['loginFilter']['status']!=='ok'){
       $status = 'error';
     }
     $list = '[]';
 
     if ($status=='ok'){
-      $id_user = $req['filter']['id'];
+      $id_user = $req['loginFilter']['id'];
       $list = $this->web_service->getTags($id_user);
     }
 
@@ -188,15 +188,15 @@ class api extends OController{
    */
   function saveEntry($req){
 	  $status = 'ok';
-	  if ($req['filter']['status']!=='ok'){
+	  if ($req['loginFilter']['status']!=='ok'){
         $status = 'error';
       }
 
       if ($status=='ok'){
-	    $id    = Base::getParam('id',    $req['url_params'], false);
-        $title = Base::getParam('title', $req['url_params'], false);
-        $body  = Base::getParam('body',  $req['url_params'], false);
-        $tags  = Base::getParam('tags',  $req['url_params'], false);
+	    $id    = OTools::getParam('id',    $req['params'], false);
+        $title = OTools::getParam('title', $req['params'], false);
+        $body  = OTools::getParam('body',  $req['params'], false);
+        $tags  = OTools::getParam('tags',  $req['params'], false);
 
         if ($id===false || $title===false || $body===false || $tags===false){
 	        $status = 'error';
@@ -206,9 +206,9 @@ class api extends OController{
 	        if ($id!==null){
 		        $entry->find(['id'=>$id]);
 	        }
-	        $entry->set('id_user', $req['filter']['id']);
+	        $entry->set('id_user', $req['loginFilter']['id']);
 	        $entry->set('title',   $title);
-	        $entry->set('slug',    Base::slugify($title));
+	        $entry->set('slug',    OTools::slugify($title));
 	        $entry->set('body',    $body);
 	        $entry->save();
 
@@ -224,14 +224,14 @@ class api extends OController{
    */
   function getTagEntries($req){
 	$status = 'ok';
-	if ($req['filter']['status']!=='ok'){
+	if ($req['loginFilter']['status']!=='ok'){
 	  $status = 'error';
 	}
 	$tag  = 'null';
 	$list = '[]';
 
 	if ($status=='ok'){
-      $id = Base::getParam('id', $req['url_params'], false);
+      $id = OTools::getParam('id', $req['params'], false);
       if ($id===false){
 	      $status = 'error';
       }
@@ -253,21 +253,21 @@ class api extends OController{
    */
   function deleteEntry($req){
 	$status = 'ok';
-	if ($req['filter']['status']!=='ok'){
+	if ($req['loginFilter']['status']!=='ok'){
 	  $status = 'error';
 	}
 
 	if ($status=='ok'){
-      $id = Base::getParam('id', $req['url_params'], false);
+      $id = OTools::getParam('id', $req['params'], false);
       if ($id===false){
 	      $status = 'error';
       }
       else{
 	    $entry = new Entry();
 	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['filter']['id']){
+		   if ($entry->get('id_user')==$req['loginFilter']['id']){
 			   $entry->deleteFull();
-			   $this->web_service->cleanEmptyTags($req['filter']['id']);
+			   $this->web_service->cleanEmptyTags($req['loginFilter']['id']);
 		   }
 		   else{
 			   $status = 'error';
@@ -287,20 +287,20 @@ class api extends OController{
    */
   function getPhotos($req){
 	$status = 'ok';
-	if ($req['filter']['status']!=='ok'){
+	if ($req['loginFilter']['status']!=='ok'){
 	  $status = 'error';
 	}
 	$list = '[]';
 
 	if ($status=='ok'){
-      $id = Base::getParam('id', $req['url_params'], false);
+      $id = OTools::getParam('id', $req['params'], false);
       if ($id===false){
 	      $status = 'error';
       }
       else{
 	    $entry = new Entry();
 	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['filter']['id']){
+		   if ($entry->get('id_user')==$req['loginFilter']['id']){
 			   $list = json_encode($entry->getPhotos());
 		   }
 		   else{
@@ -322,7 +322,7 @@ class api extends OController{
    */
   function uploadPhoto($req){
 	$status = 'ok';
-	if ($req['filter']['status']!=='ok'){
+	if ($req['loginFilter']['status']!=='ok'){
 	  $status = 'error';
 	}
 	$id = 'null';
@@ -330,15 +330,15 @@ class api extends OController{
 	$updated_at = 'null';
 
 	if ($status=='ok'){
-      $id    = Base::getParam('id',    $req['url_params'], false);
-      $photo = Base::getParam('photo', $req['url_params'], false);
+      $id    = OTools::getParam('id',    $req['params'], false);
+      $photo = OTools::getParam('photo', $req['params'], false);
       if ($id===false || $photo===false){
 	      $status = 'error';
       }
       else{
 	    $entry = new Entry();
 	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['filter']['id']){
+		   if ($entry->get('id_user')==$req['loginFilter']['id']){
 			   $new_photo = $this->web_service->addPhoto($entry, $photo);
 
 			   $id = $new_photo['id'];
@@ -365,7 +365,7 @@ class api extends OController{
    * Función para obtener una foto
    */
   function getEntryPhoto($req){
-	$id = Base::getParam('id', $req, false);
+	$id = OTools::getParam('id', $req, false);
 
 	if ($id===false){
 		echo 'error';

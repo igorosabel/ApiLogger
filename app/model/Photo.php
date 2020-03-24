@@ -1,25 +1,25 @@
 <?php
-class Photo extends OBase{
+class Photo extends OModel{
   function __construct(){
     $table_name  = 'photo';
     $model = [
       'id' => [
-        'type'    => Base::PK,
+        'type'    => OCore::PK,
         'comment' => 'Id única de cada foto'
       ],
       'id_entry' => [
-        'type'    => Base::NUM,
+        'type'    => OCore::NUM,
         'nullable' => false,
         'default' => null,
         'ref' => 'entry.id',
         'comment' => 'Id de la entrada en la que va la foto'
       ],
       'created_at' => [
-        'type'    => Base::CREATED,
+        'type'    => OCore::CREATED,
         'comment' => 'Fecha de creación del registro'
       ],
       'updated_at' => [
-        'type'    => Base::UPDATED,
+        'type'    => OCore::UPDATED,
         'nullable' => true,
         'default' => null,
         'comment' => 'Fecha de última modificación del registro'
@@ -30,9 +30,9 @@ class Photo extends OBase{
   }
   
   public function getData(){
-	  global $c;
+	  global $core;
 	  
-	  $route = $c->getDir('photos').$this->get('id');
+	  $route = $core->config->getDir('photos').$this->get('id');
 	  return file_get_contents($route);
   }
   

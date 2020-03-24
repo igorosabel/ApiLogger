@@ -1,39 +1,39 @@
 <?php
-class Tag extends OBase{
+class Tag extends OModel{
   function __construct(){
     $table_name  = 'tag';
     $model = [
       'id' => [
-        'type'    => Base::PK,
+        'type'    => OCore::PK,
         'comment' => 'Id única de la etiqueta'
       ],
       'id_user' => [
-        'type'    => Base::NUM,
+        'type'    => OCore::NUM,
         'nullable' => false,
         'default' => null,
         'ref' => 'user.id',
         'comment' => 'Id del usuario que crea la etiqueta'
       ],
       'name' => [
-        'type'    => Base::TEXT,
+        'type'    => OCore::TEXT,
         'nullable' => false,
         'default' => null,
         'size' => 100,
         'comment' => 'Texto de la etiqueta'
       ],
       'slug' => [
-        'type'    => Base::TEXT,
+        'type'    => OCore::TEXT,
         'nullable' => false,
         'default' => null,
         'size' => 100,
         'comment' => 'Slug del texto de la etiqueta'
       ],
       'created_at' => [
-        'type'    => Base::CREATED,
+        'type'    => OCore::CREATED,
         'comment' => 'Fecha de creación del registro'
       ],
       'updated_at' => [
-        'type'    => Base::UPDATED,
+        'type'    => OCore::UPDATED,
         'nullable' => true,
         'default' => null,
         'comment' => 'Fecha de última modificación del registro'

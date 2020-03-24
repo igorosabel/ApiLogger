@@ -1,51 +1,51 @@
 <?php
-class Entry extends OBase{
+class Entry extends OModel{
   function __construct(){
     $table_name  = 'entry';
     $model = [
       'id' => [
-        'type'    => Base::PK,
+        'type'    => OCore::PK,
         'comment' => 'Id única de cada entrada'
       ],
       'id_user' => [
-        'type'    => Base::NUM,
+        'type'    => OCore::NUM,
         'nullable' => false,
         'default' => null,
         'ref' => 'user.id',
         'comment' => 'Id del usuario que crea la entrada'
       ],
       'title' => [
-        'type'    => Base::TEXT,
+        'type'    => OCore::TEXT,
         'nullable' => false,
         'default' => null,
         'size' => 100,
         'comment' => 'Título de la entrada'
       ],
       'slug' => [
-        'type'    => Base::TEXT,
+        'type'    => OCore::TEXT,
         'nullable' => false,
         'default' => null,
         'size' => 100,
         'comment' => 'Slug del título de la entrada'
       ],
       'body' => [
-        'type'    => Base::LONGTEXT,
+        'type'    => OCore::LONGTEXT,
         'nullable' => true,
         'default' => null,
         'comment' => 'Cuerpo de la entrada'
       ],
       'is_public' => [
-        'type'    => Base::BOOL,
+        'type'    => OCore::BOOL,
         'nullable' => false,
         'default' => false,
         'comment' => 'Indica si la entrada es pública 1 o no 0'
       ],
       'created_at' => [
-        'type'    => Base::CREATED,
+        'type'    => OCore::CREATED,
         'comment' => 'Fecha de creación del registro'
       ],
       'updated_at' => [
-        'type'    => Base::UPDATED,
+        'type'    => OCore::UPDATED,
         'nullable' => true,
         'default' => null,
         'comment' => 'Fecha de última modificación del registro'
