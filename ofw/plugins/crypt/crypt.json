@@ -1,8 +1,14 @@
 {
   "file_name": "OCrypt.php",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Clase para cifrar/descifrar textos.",
   "updates": {
+    "1.0.1": {
+      "message": "1.0.1 - Refactorizaciones",
+      "files": [
+        "OCrypt.php"
+      ]
+    },
     "1.0.0": {
       "message": "1.0.0 - Versión inicial del plugin OCrypt",
       "files": [
