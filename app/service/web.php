@@ -3,12 +3,12 @@
    * Clase con funciones generales para usar a lo largo del sitio
    */
 class webService extends OService{
-  function __construct($controller=null){
-    $this->setController($controller);
+  function __construct(){
+    $this->loadService();
   }
 
   public function getEntries($id_user){
-    $db = $this->getController()->getDb();
+    $db = new ODB();
     $sql = "SELECT * FROM `entry` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
     $db->query($sql, [$id_user]);
     $list = [];
@@ -24,7 +24,7 @@ class webService extends OService{
   }
 
   public function getTags($id_user){
-    $db = $this->getController()->getDb();
+    $db = new ODB();
     $sql = "SELECT * FROM `tag` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
     $db->query($sql, [$id_user]);
     $list = [];
@@ -40,7 +40,7 @@ class webService extends OService{
   }
 
   public function saveTags($entry, $tags){
-    $db = $this->getController()->getDb();
+    $db = new ODB();
     $entry_tags = $entry->getTags();
     $to_be_checked = [];
     // Busco etiquetas de la entrada y las "marco" para borrar
@@ -91,13 +91,13 @@ class webService extends OService{
   }
 
   public function cleanEmptyTags($id_user){
-    $db = $this->getController()->getDb();
+    $db = new ODB();
     $sql = "DELETE FROM `tag` WHERE `id` NOT IN (SELECT DISTINCT(`id_tag`) FROM `entry_tag` WHERE `id_entry` IN (SELECT `id` FROM `entry` WHERE `id_user` = ?))";
     $db->query($sql, [$id_user]);
   }
   
   public function getTagEntries($id_tag){
-    $db = $this->getController()->getDb();
+    $db = new ODB();
     $sql = "SELECT * FROM `entry` WHERE `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` = ?) ORDER BY `updated_at` DESC";
     $db->query($sql, [$id_tag]);
     $list = [];
@@ -117,7 +117,7 @@ class webService extends OService{
 	$photo->set('id_entry', $entry->get('id'));
 	$photo->save();
 
-	$route = $this->getController()->getConfig()->getDir('photos').$photo->get('id');
+	$route = $this->getConfig()->getDir('photos').$photo->get('id');
 	file_put_contents($route, $data);
 	
 	return $photo->toArray();
