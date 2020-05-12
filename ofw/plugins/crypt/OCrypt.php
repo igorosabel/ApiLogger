@@ -1,28 +1,61 @@
-<?php
+<?php declare(strict_types=1);
 class OCrypt {
-	private $key = null;
-	private $method = 'aes-256-cbc';
+	private ?string $key = null;
+	private string $method = 'aes-256-cbc';
 
-	function __construct($key=null) {
+	/**
+	 * Sets encryption key on startup if given
+	 *
+	 * @param string $key Encryption string key
+	 */
+	function __construct(?string $key=null) {
 		if (!is_null($key)) {
 			$this->setKey($key);
 		}
 	}
 
-	public function setKey($key) {
+	/**
+	 * Sets encryption string key
+	 *
+	 * @param string $key Encryption string key
+	 *
+	 * @return void
+	 */
+	public function setKey(string $key): void {
 		$this->key = $key;
 	}
 
-	public function setMethod($method) {
+	/**
+	 * Sets encryption method
+	 *
+	 * @param string $method Encryption method
+	 *
+	 * @return void
+	 */
+	public function setMethod(string $method): void {
 		$this->method = $method;
 	}
 
-	public function generateKey() {
+	/**
+	 * Generates a random string key and returns it
+	 *
+	 * @return string Returns generated key
+	 */
+	public function generateKey(): string {
 		$this->key = base64_encode(openssl_random_pseudo_bytes(32));
 		return $this->key;
 	}
 
-	function encrypt($data, $key=null) {
+	/**
+	 * Encrypts given string using a key
+	 *
+	 * @param string $data String data to be encrypted
+	 *
+	 * @param string $key Key string to be used to encrypt data
+	 *
+	 * @return string Encrypted string
+	 */
+	function encrypt(string $data, ?string $key=null): string {
 		if (is_null($key)) {
 			$key = $this->key;
 		}
@@ -32,7 +65,16 @@ class OCrypt {
 		return base64_encode($encrypted . '::' . $iv);
 	}
 
-	public function decrypt($data, $key=null) {
+	/**
+	 * Decrypts given string using a key
+	 *
+	 * @param string $data String data to be decrypted
+	 *
+	 * @param string $key Key string to be used to decrypt data
+	 *
+	 * @return string Decrypted string
+	 */
+	public function decrypt(string $data, ?string $key=null): string {
 		if (is_null($key)) {
 			$key = $this->key;
 		}

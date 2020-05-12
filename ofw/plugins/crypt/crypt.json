@@ -1,9 +1,21 @@
 {
   "file_name": "OCrypt.php",
-  "version": "1.0.1",
+  "version": "1.1.1",
   "description": "Clase para cifrar/descifrar textos.",
   "updates": {
-    "1.0.1": {
+		"1.1.1": {
+			"message": "1.1.1 - Corrección en el constructor de la clase",
+			"files": [
+				"OCrypt.php"
+			]
+		},
+		"1.1.0": {
+			"message": "1.1.0 - Añado tipado fuerte",
+			"files": [
+				"OCrypt.php"
+			]
+		},
+		"1.0.1": {
       "message": "1.0.1 - Refactorizaciones",
       "files": [
         "OCrypt.php"
