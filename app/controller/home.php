@@ -1,23 +1,35 @@
-<?php
-class home extends OController{
-  /*
+<?php declare(strict_types=1);
+class home extends OController {
+  /**
    * Página temporal, sitio cerrado
-   */
-  public function closed($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  public function closed(ORequest $req): void {
     OUrl::goToUrl('https://logger.osumi.es');
   }
 
-  /*
+  /**
    * Página de error 404
-   */
-  public function notFound($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  public function notFound(ORequest $req): void {
     OUrl::goToUrl('https://logger.osumi.es');
   }
 
-  /*
+  /**
    * Home pública
-   */
-  public function index($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  public function index(ORequest $req): void {
     OUrl::goToUrl('https://logger.osumi.es');
   }
 }

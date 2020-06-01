@@ -1,6 +1,9 @@
-<?php
-class Entry extends OModel{
-  function __construct(){
+<?php declare(strict_types=1);
+class Entry extends OModel {
+	/**
+	 * Configures current model object based on data-base table structure
+	 */
+  function __construct() {
     $table_name  = 'entry';
     $model = [
       'id' => [
@@ -8,72 +11,89 @@ class Entry extends OModel{
         'comment' => 'Id única de cada entrada'
       ],
       'id_user' => [
-        'type'    => OCore::NUM,
+        'type'     => OCore::NUM,
         'nullable' => false,
-        'default' => null,
-        'ref' => 'user.id',
-        'comment' => 'Id del usuario que crea la entrada'
+        'default'  => null,
+        'ref'      => 'user.id',
+        'comment'  => 'Id del usuario que crea la entrada'
       ],
       'title' => [
-        'type'    => OCore::TEXT,
+        'type'     => OCore::TEXT,
         'nullable' => false,
-        'default' => null,
-        'size' => 100,
-        'comment' => 'Título de la entrada'
+        'default'  => null,
+        'size'     => 100,
+        'comment'  => 'Título de la entrada'
       ],
       'slug' => [
-        'type'    => OCore::TEXT,
+        'type'     => OCore::TEXT,
         'nullable' => false,
-        'default' => null,
-        'size' => 100,
-        'comment' => 'Slug del título de la entrada'
+        'default'  => null,
+        'size'     => 100,
+        'comment'  => 'Slug del título de la entrada'
       ],
       'body' => [
-        'type'    => OCore::LONGTEXT,
+        'type'     => OCore::LONGTEXT,
         'nullable' => true,
-        'default' => null,
-        'comment' => 'Cuerpo de la entrada'
+        'default'  => null,
+        'comment'  => 'Cuerpo de la entrada'
       ],
       'is_public' => [
-        'type'    => OCore::BOOL,
+        'type'     => OCore::BOOL,
         'nullable' => false,
-        'default' => false,
-        'comment' => 'Indica si la entrada es pública 1 o no 0'
+        'default'  => false,
+        'comment'  => 'Indica si la entrada es pública 1 o no 0'
       ],
       'created_at' => [
         'type'    => OCore::CREATED,
         'comment' => 'Fecha de creación del registro'
       ],
       'updated_at' => [
-        'type'    => OCore::UPDATED,
+        'type'     => OCore::UPDATED,
         'nullable' => true,
-        'default' => null,
-        'comment' => 'Fecha de última modificación del registro'
+        'default'  => null,
+        'comment'  => 'Fecha de última modificación del registro'
       ]
     ];
 
     parent::load($table_name, $model);
   }
 
-  private $tags = null;
+  private ?array $tags = null;
 
-  public function getTags(){
-    if (is_null($this->tags)){
+	/**
+	 * Obtiene la lista de tags de una entrada
+	 *
+	 * @return array Lista de tags
+	 */
+  public function getTags(): array {
+    if (is_null($this->tags)) {
       $this->loadTags();
     }
     return $this->tags;
   }
 
-  public function setTags($tags){
+	/**
+	 * Guarda la lista de tags
+	 *
+	 * @param array Lista de tags
+	 *
+	 * @return void
+	 */
+  public function setTags(array $tags): void {
     $this->tags = $tags;
   }
 
-  public function loadTags(){
+	/**
+	 * Carga la lista de tags
+	 *
+	 * @return void
+	 */
+  public function loadTags(): void {
     $sql = "SELECT * FROM `tag` WHERE `id` IN (SELECT `id_tag` FROM `entry_tag` WHERE `id_entry` = ?) ORDER BY `name` ASC";
     $this->db->query($sql, [$this->get('id')]);
     $list = [];
 
-    while ($res = $this->db->next()){
+    while ($res = $this->db->next()) {
       $tag = new Tag();
       $tag->update($res);
 
@@ -83,25 +103,42 @@ class Entry extends OModel{
     $this->setTags($list);
   }
 
-  private $photos = null;
+  private ?array $photos = null;
 
-  public function getPhotos(){
-	if (is_null($this->photos)){
-		$this->loadPhotos();
-	}
-	return $this->photos;
+	/**
+	 * Obtiene la lista de fotos de una entrada
+	 *
+	 * @return array Lista de fotos
+	 */
+  public function getPhotos(): array {
+		if (is_null($this->photos)) {
+			$this->loadPhotos();
+		}
+		return $this->photos;
   }
 
-  public function setPhotos($photos){
+	/**
+	 * Guarda la lista de fotos
+	 *
+	 * @param array Lista de fotos
+	 *
+	 * @return void
+	 */
+  public function setPhotos(array $photos): void {
 	  $this->photos = $photos;
   }
 
-  public function loadPhotos(){
+	/**
+	 * Carga la lista de fotos de una entrada
+	 *
+	 * @return void
+	 */
+  public function loadPhotos(): void {
 	  $sql = "SELECT * FROM `photo` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);
 	  $list = [];
 
-	  while ($res = $this->db->next()){
+	  while ($res = $this->db->next()) {
 		  $photo = new Photo();
 		  $photo->update($res);
 
@@ -111,13 +148,23 @@ class Entry extends OModel{
 	  $this->setPhotos($list);
   }
 
-  public function deleteFull(){
+	/**
+	 * Borra una entrada y sus tags relacionadas
+	 *
+	 * @return void
+	 */
+  public function deleteFull(): void {
 	  $sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
 	  $this->db->query($sql, [$this->get('id')]);
 	  $this->delete();
   }
 
-  public function toArray(){
+	/**
+	 * Devuelve los datos de una entrada como un array
+	 *
+	 * @return array Datos de la entrada en formato array
+	 */
+  public function toArray(): array {
     return [
       'id'        => $this->get('id'),
       'title'     => $this->get('title'),

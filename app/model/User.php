@@ -1,6 +1,9 @@
-<?php
-class User extends OModel{
-  function __construct(){
+<?php declare(strict_types=1);
+class User extends OModel {
+	/**
+	 * Configures current model object based on data-base table structure
+	 */
+  function __construct() {
     $table_name  = 'user';
     $model = [
       'id' => [
@@ -8,28 +11,28 @@ class User extends OModel{
         'comment' => 'Id único de cada usuario'
       ],
       'username' => [
-        'type'    => OCore::TEXT,
+        'type'     => OCore::TEXT,
         'nullable' => false,
-        'default' => null,
-        'size' => 50,
-        'comment' => 'Nombre de usuario'
+        'default'  => null,
+        'size'     => 50,
+        'comment'  => 'Nombre de usuario'
       ],
       'pass' => [
-        'type'    => OCore::TEXT,
+        'type'     => OCore::TEXT,
         'nullable' => false,
-        'default' => null,
-        'size' => 200,
-        'comment' => 'Contraseña cifrada del usuario'
+        'default'  => null,
+        'size'     => 200,
+        'comment'  => 'Contraseña cifrada del usuario'
       ],
       'created_at' => [
         'type'    => OCore::CREATED,
         'comment' => 'Fecha de creación del registro'
       ],
       'updated_at' => [
-        'type'    => OCore::UPDATED,
+        'type'     => OCore::UPDATED,
         'nullable' => true,
-        'default' => null,
-        'comment' => 'Fecha de última modificación del registro'
+        'default'  => null,
+        'comment'  => 'Fecha de última modificación del registro'
       ]
     ];
 

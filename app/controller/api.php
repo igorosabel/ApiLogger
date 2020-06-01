@@ -1,32 +1,36 @@
-<?php
-class api extends OController{
-  private $web_service;
+<?php declare(strict_types=1);
+class api extends OController {
+  private ?webService $web_service = null;
 
-  function __construct(){
+  function __construct() {
     $this->web_service = new webService();
   }
 
-  /*
+  /**
    * Función para registrar un nuevo usuario
-   */
-  function register($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function register(ORequest $req): void {
     $status   = 'ok';
-    $username = OTools::getParam('username', $req['params'], false);
-    $pass     = OTools::getParam('pass',     $req['params'], false);
+    $username = $req->getParamString('username');
+    $pass     = $req->getParamString('pass');
 
     $id    = 'null';
     $token = '';
 
-    if ($username===false || $pass===false){
+    if (is_null($username) || is_null($pass)) {
       $status = 'error';
     }
 
-    if ($status=='ok'){
+    if ($status=='ok') {
       $u = new User();
-      if ($u->find(['username'=>$username])){
+      if ($u->find(['username'=>$username])) {
         $status = 'error';
       }
-      else{
+      else {
         $u->set('username', $username);
         $u->set('pass', password_hash($pass, PASSWORD_BCRYPT));
         $u->save();
@@ -46,25 +50,29 @@ class api extends OController{
     }
   }
 
-  /*
+  /**
    * Función para iniciar sesión
-   */
-  function login($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function login(ORequest $req): void {
     $status   = 'ok';
-    $username = OTools::getParam('username', $req['params'], false);
-    $pass     = OTools::getParam('pass',     $req['params'], false);
+    $username = $req->getParamString('username');
+    $pass     = $req->getParamString('pass');
 
     $id    = 'null';
     $token = '';
 
-    if ($username===false || $pass===false){
+    if (is_null($username) || is_null($pass)) {
       $status = 'error';
     }
 
-    if ($status=='ok'){
+    if ($status=='ok') {
       $u = new User();
-      if ($u->find(['username'=>$username])){
-        if (password_verify($pass, $u->get('pass'))){
+      if ($u->find(['username'=>$username])) {
+        if (password_verify($pass, $u->get('pass'))) {
           $id = $u->get('id');
 
           $tk = new OToken($this->getConfig()->getExtra('secret'));
@@ -73,11 +81,11 @@ class api extends OController{
           $tk->addParam('exp', mktime() + (24 * 60 * 60));
           $token = $tk->getToken();
         }
-        else{
+        else {
           $status = 'error';
         }
       }
-      else{
+      else {
         $status = 'error';
       }
     }
@@ -88,47 +96,58 @@ class api extends OController{
     $this->getTemplate()->add('token',      $token);
   }
 
-  /*
+  /**
    * Función para obtener las entradas
-   */
-  function getEntries($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getEntries(ORequest $req): void {
     $status = 'ok';
-    if ($req['loginFilter']['status']!=='ok'){
+		$filter = $req->getFilter('loginFilter');
+
+    if (is_null($filter) || !array_key_exists('id', $filter)) {
       $status = 'error';
     }
     $list = '[]';
 
-    if ($status=='ok'){
-      $id_user = $req['loginFilter']['id'];
-      $list = $this->web_service->getEntries($id_user);
+    if ($status=='ok') {
+      $list = $this->web_service->getEntries($filter['id']);
     }
 
     $this->getTemplate()->add('status', $status);
     $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para obtener el detalle de una entrada
-   */
-  function getEntry($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getEntry(ORequest $req): void {
     $status = 'ok';
-    $id     = OTools::getParam('id', $req['params'], false);
-    if ($req['loginFilter']['status']!=='ok' || $id===false){
+    $id     = $req->getParamInt('id');
+		$filter = $req->getFilter('loginFilter');
+
+    if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
       $status = 'error';
     }
     $entry = 'null';
 
-    if ($status=='ok'){
+    if ($status=='ok') {
       $e = new Entry();
-      if ($e->find(['id'=>$id])){
-        if ($e->get('id_user')==$req['loginFilter']['id']){
+      if ($e->find(['id'=>$id])) {
+        if ($e->get('id_user')==$filter['id']) {
           $entry = json_encode($e->toArray());
         }
-        else{
+        else {
           $status = 'error';
         }
       }
-      else{
+      else {
         $status = 'error';
       }
     }
@@ -137,25 +156,29 @@ class api extends OController{
     $this->getTemplate()->add('entry',  $entry, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para obtener el detalle de una entrada pública
-   */
-  function getPublicEntry($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getPublicEntry(ORequest $req): void {
     $status = 'ok';
-    $id     = OTools::getParam('id', $req['params'], false);
+    $id     = $req->getParamInt('id');
     $entry = 'null';
 
-    if ($status=='ok'){
+    if ($status=='ok') {
       $e = new Entry();
-      if ($e->find(['id'=>$id])){
-        if ($e->get('is_public')){
+      if ($e->find(['id'=>$id])) {
+        if ($e->get('is_public')) {
           $entry = json_encode($e->toArray());
         }
-        else{
+        else {
           $status = 'error';
         }
       }
-      else{
+      else {
         $status = 'error';
       }
     }
@@ -164,227 +187,240 @@ class api extends OController{
     $this->getTemplate()->add('entry',  $entry, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para obtener la lista de tags de un usuario
-   */
-  function getTags($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getTags(ORequest $req): void {
     $status = 'ok';
-    if ($req['loginFilter']['status']!=='ok'){
+		$filter = $req->getFilter('loginFilter');
+
+    if (is_null($filter) || !array_key_exists('id', $filter)) {
       $status = 'error';
     }
     $list = '[]';
 
-    if ($status=='ok'){
-      $id_user = $req['loginFilter']['id'];
-      $list = $this->web_service->getTags($id_user);
+    if ($status=='ok') {
+      $list = $this->web_service->getTags($filter['id']);
     }
 
     $this->getTemplate()->add('status', $status);
     $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para guardar una entrada
-   */
-  function saveEntry($req){
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function saveEntry(ORequest $req): void {
 	  $status = 'ok';
-	  if ($req['loginFilter']['status']!=='ok'){
-        $status = 'error';
-      }
+		$id     = $req->getParamInt('id');
+		$title  = $req->getParamString('title');
+		$body   = $req->getParamString('body');
+		$tags   = $req->getParamString('tags');
+		$filter = $req->getFilter('loginFilter');
 
-      if ($status=='ok'){
-	    $id    = OTools::getParam('id',    $req['params'], false);
-        $title = OTools::getParam('title', $req['params'], false);
-        $body  = OTools::getParam('body',  $req['params'], false);
-        $tags  = OTools::getParam('tags',  $req['params'], false);
+	  if (is_null($title) || is_null($body) || is_null($tags) || is_null($filter) || !array_key_exists('id', $filter)) {
+      $status = 'error';
+    }
 
-        if ($id===false || $title===false || $body===false || $tags===false){
-	        $status = 'error';
-        }
-        else{
-	        $entry = new Entry();
-	        if ($id!==null){
-		        $entry->find(['id'=>$id]);
-	        }
-	        $entry->set('id_user', $req['loginFilter']['id']);
-	        $entry->set('title',   $title);
-	        $entry->set('slug',    OTools::slugify($title));
-	        $entry->set('body',    $body);
-	        $entry->save();
+    if ($status=='ok') {
+			$entry = new Entry();
+			if (!is_null($id)) {
+				$entry->find(['id'=>$id]);
+			}
+			$entry->set('id_user', $filter['id']);
+			$entry->set('title',   $title);
+			$entry->set('slug',    OTools::slugify($title));
+			$entry->set('body',    $body);
+			$entry->save();
 
-	        $this->web_service->saveTags($entry, $tags);
-        }
-      }
+			$this->web_service->saveTags($entry, $tags);
+		}
 
 	  $this->getTemplate()->add('status', $status);
   }
 
-  /*
+  /**
    * Función para obtener las entradas con una tag concreta
-   */
-  function getTagEntries($req){
-	$status = 'ok';
-	if ($req['loginFilter']['status']!=='ok'){
-	  $status = 'error';
-	}
-	$tag  = 'null';
-	$list = '[]';
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getTagEntries(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParamInt('id');
+		$filter = $req->getFilter('loginFilter');
 
-	if ($status=='ok'){
-      $id = OTools::getParam('id', $req['params'], false);
-      if ($id===false){
-	      $status = 'error';
-      }
-      else{
-	      $t = new Tag();
-	      $t->find(['id'=>$id]);
-	      $tag = json_encode($t->toArray());
-	      $list = $this->web_service->getTagEntries($id);
-      }
-	}
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
+		  $status = 'error';
+		}
+		$tag  = 'null';
+		$list = '[]';
 
-	$this->getTemplate()->add('status', $status);
-	$this->getTemplate()->add('tag',    $tag,  'nourlencode');
+		if ($status=='ok') {
+			$t = new Tag();
+			$t->find(['id'=>$id]);
+			$tag = json_encode($t->toArray());
+			$list = $this->web_service->getTagEntries($id);
+		}
+
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('tag',    $tag,  'nourlencode');
     $this->getTemplate()->add('list',   $list, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para borrar una entrada
-   */
-  function deleteEntry($req){
-	$status = 'ok';
-	if ($req['loginFilter']['status']!=='ok'){
-	  $status = 'error';
-	}
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function deleteEntry(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParamInt('id');
+		$filter = $req->getFilter('loginFilter');
 
-	if ($status=='ok'){
-      $id = OTools::getParam('id', $req['params'], false);
-      if ($id===false){
-	      $status = 'error';
-      }
-      else{
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
+		  $status = 'error';
+		}
+
+		if ($status=='ok') {
 	    $entry = new Entry();
-	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['loginFilter']['id']){
+	    if ($entry->find(['id'=>$id])) {
+		   if ($entry->get('id_user')==$filter['id']) {
 			   $entry->deleteFull();
 			   $this->web_service->cleanEmptyTags($req['loginFilter']['id']);
 		   }
-		   else{
+		   else {
 			   $status = 'error';
 		   }
 	    }
-	    else{
+	    else {
 		    $status = 'error';
 	    }
-	  }
-	}
+		}
 
-	$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('status', $status);
   }
 
-  /*
+  /**
    * Función para obtener las fotos de una entrada concreta
-   */
-  function getPhotos($req){
-	$status = 'ok';
-	if ($req['loginFilter']['status']!=='ok'){
-	  $status = 'error';
-	}
-	$list = '[]';
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getPhotos(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParamInt('id');
+		$filter = $req->getFilter('loginFilter');
 
-	if ($status=='ok'){
-      $id = OTools::getParam('id', $req['params'], false);
-      if ($id===false){
-	      $status = 'error';
-      }
-      else{
+		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
+		  $status = 'error';
+		}
+		$list = '[]';
+
+		if ($status=='ok') {
 	    $entry = new Entry();
-	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['loginFilter']['id']){
+	    if ($entry->find(['id'=>$id])) {
+		   if ($entry->get('id_user')==$filter['id']) {
 			   $list = json_encode($entry->getPhotos());
 		   }
-		   else{
+		   else {
 			   $status = 'error';
 		   }
 	    }
-	    else{
+	    else {
 		    $status = 'error';
 	    }
-	  }
-	}
+		}
 
-	$this->getTemplate()->add('status', $status);
-	$this->getTemplate()->add('list',   $list, 'nourlencode');
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('list',   $list, 'nourlencode');
   }
 
-  /*
+  /**
    * Función para añadir una foto a una entrada
-   */
-  function uploadPhoto($req){
-	$status = 'ok';
-	if ($req['loginFilter']['status']!=='ok'){
-	  $status = 'error';
-	}
-	$id = 'null';
-	$created_at = 'null';
-	$updated_at = 'null';
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function uploadPhoto(ORequest $req): void {
+		$status = 'ok';
+		$id     = $req->getParamInt('id');
+		$photo  = $req->getParam('photo');
+		$filter = $req->getFilter('loginFilter');
 
-	if ($status=='ok'){
-      $id    = OTools::getParam('id',    $req['params'], false);
-      $photo = OTools::getParam('photo', $req['params'], false);
-      if ($id===false || $photo===false){
-	      $status = 'error';
-      }
-      else{
+		if (is_null($id) || is_null($photo) || is_null($filter) || !array_key_exists('id', $filter)) {
+		  $status = 'error';
+		}
+		$id = 'null';
+		$created_at = 'null';
+		$updated_at = 'null';
+
+		if ($status=='ok') {
 	    $entry = new Entry();
-	    if ($entry->find(['id'=>$id])){
-		   if ($entry->get('id_user')==$req['loginFilter']['id']){
+	    if ($entry->find(['id'=>$id])) {
+		   if ($entry->get('id_user')==$filter['id']) {
 			   $new_photo = $this->web_service->addPhoto($entry, $photo);
 
 			   $id = $new_photo['id'];
 			   $created_at = '"'.$new_photo['createdAt'].'"';
 			   $updated_at = '"'.$new_photo['updatedAt'].'"';
 		   }
-		   else{
+		   else {
 			   $status = 'error';
 		   }
 	    }
-	    else{
+	    else {
 		    $status = 'error';
 	    }
-	  }
-	}
+		}
 
-	$this->getTemplate()->add('status',     $status);
-	$this->getTemplate()->add('id',         $id,         'nourlencode');
-	$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
-	$this->getTemplate()->add('updated_at', $updated_at, 'nourlencode');
+		$this->getTemplate()->add('status',     $status);
+		$this->getTemplate()->add('id',         $id,         'nourlencode');
+		$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
+		$this->getTemplate()->add('updated_at', $updated_at, 'nourlencode');
   }
 
   /*
    * Función para obtener una foto
-   */
-  function getEntryPhoto($req){
-	$id = OTools::getParam('id', $req, false);
+	 *
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 *
+	 * @return void
+	 */
+  function getEntryPhoto(ORequest $req): void {
+		$id = $req->getParamInt('id');
 
-	if ($id===false){
-		echo 'error';
-		exit();
-	}
-	else{
-		$p = new Photo();
-		if ($p->find(['id'=>$id])){
-			$photo_data = $p->getImage();
-			header('Content-type: '.$photo_data['type']);
-			echo base64_decode($photo_data['image']);
-			exit();
-		}
-		else{
+		if (is_null($id)) {
 			echo 'error';
-			exit();
+			exit;
 		}
-	}
+		else {
+			$p = new Photo();
+			if ($p->find(['id'=>$id])) {
+				$photo_data = $p->getImage();
+				header('Content-type: '.$photo_data['type']);
+				echo base64_decode($photo_data['image']);
+				exit;
+			}
+			else {
+				echo 'error';
+				exit;
+			}
+		}
 
-	$this->getTemplate()->add('photo', $photo, 'nourlencode');
+		$this->getTemplate()->add('photo', $photo, 'nourlencode');
   }
 }

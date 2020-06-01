@@ -13,5 +13,8 @@
   "dir": {
     "photos": "{{base}}photos/"
   },
-  "debug": false
+  "log_level": "ERROR",
+	"extra": {
+		"secret": "2640cfb75854affb109eb8517456332bfce34777"
+	}
 }
