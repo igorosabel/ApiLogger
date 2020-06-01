@@ -1,19 +1,19 @@
 {
-  "db": {
-    "host": "localhost",
-    "user": "logger",
-    "pass": "0%Cq5aq7",
-    "name": "logger",
-    "charset": "utf8mb4"
-  },
-  "base_url": "https://apilogger.osumi.es",
-  "admin_email": "inigo.gorosabel@gmail.com",
-  "default_title": "API Logger",
-  "lang": "es",
-  "dir": {
-    "photos": "{{base}}photos/"
-  },
-  "log_level": "ERROR",
+	"db": {
+		"host": "localhost",
+		"user": "logger",
+		"pass": "0%Cq5aq7",
+		"name": "logger",
+		"charset": "utf8mb4"
+	},
+	"base_url": "https://apilogger.osumi.es",
+	"admin_email": "inigo.gorosabel@gmail.com",
+	"default_title": "API Logger",
+	"lang": "es",
+	"dir": {
+		"photos": "{{base}}photos/"
+	},
+	"log_level": "ERROR",
 	"extra": {
 		"secret": "2640cfb75854affb109eb8517456332bfce34777"
 	}

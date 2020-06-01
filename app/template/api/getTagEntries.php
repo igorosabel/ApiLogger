@@ -1,5 +1,5 @@
 {
-  "status": "{{status}}",
-  "tag": {{tag}},
-  "list": {{list}}
+	"status": "{{status}}",
+	"tag": {{tag}},
+	"list": {{list}}
 }
