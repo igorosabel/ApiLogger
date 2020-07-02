@@ -13,7 +13,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function register(ORequest $req): void {
+	public function register(ORequest $req): void {
 		$status   = 'ok';
 		$username = $req->getParamString('username');
 		$pass     = $req->getParamString('pass');
@@ -57,7 +57,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function login(ORequest $req): void {
+	public function login(ORequest $req): void {
 		$status   = 'ok';
 		$username = $req->getParamString('username');
 		$pass     = $req->getParamString('pass');
@@ -103,7 +103,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getEntries(ORequest $req): void {
+	public function getEntries(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
 
@@ -127,7 +127,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getEntry(ORequest $req): void {
+	public function getEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -163,7 +163,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getPublicEntry(ORequest $req): void {
+	public function getPublicEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$entry = 'null';
@@ -194,7 +194,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getTags(ORequest $req): void {
+	public function getTags(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
 
@@ -218,7 +218,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function saveEntry(ORequest $req): void {
+	public function saveEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$title  = $req->getParamString('title');
@@ -254,7 +254,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getTagEntries(ORequest $req): void {
+	public function getTagEntries(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -284,7 +284,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function deleteEntry(ORequest $req): void {
+	public function deleteEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -319,7 +319,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getPhotos(ORequest $req): void {
+	public function getPhotos(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('loginFilter');
@@ -355,7 +355,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function uploadPhoto(ORequest $req): void {
+	public function uploadPhoto(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$photo  = $req->getParam('photo');
@@ -400,7 +400,7 @@ class api extends OModule {
 	 *
 	 * @return void
 	 */
-	function getEntryPhoto(ORequest $req): void {
+	public function getEntryPhoto(ORequest $req): void {
 		$id = $req->getParamInt('id');
 
 		if (is_null($id)) {
