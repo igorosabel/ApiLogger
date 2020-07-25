@@ -1,4 +1,8 @@
 <?php declare(strict_types=1);
+/**
+ * @type json
+ * @prefix /api
+*/
 class api extends OModule {
 	private ?webService $web_service = null;
 
@@ -9,8 +13,8 @@ class api extends OModule {
 	/**
 	 * Función para registrar un nuevo usuario
 	 *
+	 * @url /register
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function register(ORequest $req): void {
@@ -53,8 +57,8 @@ class api extends OModule {
 	/**
 	 * Función para iniciar sesión
 	 *
+	 * @url /login
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function login(ORequest $req): void {
@@ -99,8 +103,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener las entradas
 	 *
+	 * @url /getEntries
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getEntries(ORequest $req): void {
@@ -123,8 +128,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una entrada
 	 *
+	 * @url /getEntry
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getEntry(ORequest $req): void {
@@ -159,8 +165,8 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una entrada pública
 	 *
+	 * @url /getPublicEntry
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getPublicEntry(ORequest $req): void {
@@ -190,8 +196,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de tags de un usuario
 	 *
+	 * @url /getTags
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getTags(ORequest $req): void {
@@ -214,8 +221,9 @@ class api extends OModule {
 	/**
 	 * Función para guardar una entrada
 	 *
+	 * @url /saveEntry
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function saveEntry(ORequest $req): void {
@@ -250,8 +258,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener las entradas con una tag concreta
 	 *
+	 * @url /getTagEntries
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getTagEntries(ORequest $req): void {
@@ -280,8 +289,9 @@ class api extends OModule {
 	/**
 	 * Función para borrar una entrada
 	 *
+	 * @url /deleteEntry
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function deleteEntry(ORequest $req): void {
@@ -315,8 +325,9 @@ class api extends OModule {
 	/**
 	 * Función para obtener las fotos de una entrada concreta
 	 *
+	 * @url /getPhotos
+	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getPhotos(ORequest $req): void {
@@ -349,55 +360,10 @@ class api extends OModule {
 	}
 
 	/**
-	 * Función para añadir una foto a una entrada
-	 *
-	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
-	 * @return void
-	 */
-	public function uploadPhoto(ORequest $req): void {
-		$status = 'ok';
-		$id     = $req->getParamInt('id');
-		$photo  = $req->getParam('photo');
-		$filter = $req->getFilter('loginFilter');
-
-		if (is_null($id) || is_null($photo) || is_null($filter) || !array_key_exists('id', $filter)) {
-			$status = 'error';
-		}
-		$id = 'null';
-		$created_at = 'null';
-		$updated_at = 'null';
-
-		if ($status=='ok') {
-			$entry = new Entry();
-			if ($entry->find(['id'=>$id])) {
-				if ($entry->get('id_user')==$filter['id']) {
-					$new_photo = $this->web_service->addPhoto($entry, $photo);
-
-					$id = $new_photo['id'];
-					$created_at = '"'.$new_photo['createdAt'].'"';
-					$updated_at = '"'.$new_photo['updatedAt'].'"';
-				}
-				else {
-					$status = 'error';
-				}
-			}
-			else {
-				$status = 'error';
-			}
-		}
-
-		$this->getTemplate()->add('status',     $status);
-		$this->getTemplate()->add('id',         $id,         'nourlencode');
-		$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
-		$this->getTemplate()->add('updated_at', $updated_at, 'nourlencode');
-	}
-
-	/*
 	 * Función para obtener una foto
 	 *
+	 * @url /getEntryPhoto/:id
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
-	 *
 	 * @return void
 	 */
 	public function getEntryPhoto(ORequest $req): void {
