@@ -70,4 +70,22 @@ class Photo extends OModel {
 			'updatedAt' => $this->get('updated_at', 'd/m/Y')
 		];
 	}
+
+	/**
+	 * Borra una foto por completo, el archivo y el registro
+	 *
+	 * @return bool Devuelve si la foto ha sido borrada correctamente o no
+	 */
+	public function deleteFull(): bool {
+		global $core;
+
+		$route = $core->config->getDir('photos').$this->get('id');
+		if (file_exists($route)) {
+			unlink($route);
+			$this->delete();
+			return true;
+		}
+
+		return false;
+	}
 }

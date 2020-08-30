@@ -231,7 +231,7 @@ class api extends OModule {
 		$id     = $req->getParamInt('id');
 		$title  = $req->getParamString('title');
 		$body   = $req->getParamString('body');
-		$tags   = $req->getParamString('tags');
+		$tags   = $req->getParam('tags');
 		$filter = $req->getFilter('loginFilter');
 
 		if (is_null($title) || is_null($body) || is_null($tags) || is_null($filter) || !array_key_exists('id', $filter)) {
@@ -368,7 +368,6 @@ class api extends OModule {
 	 */
 	public function getEntryPhoto(ORequest $req): void {
 		$id = $req->getParamInt('id');
-
 		if (is_null($id)) {
 			echo 'error';
 			exit;
@@ -388,5 +387,73 @@ class api extends OModule {
 		}
 
 		$this->getTemplate()->add('photo', $photo, 'nourlencode');
+	}
+
+	/**
+	 * Función para guardar una nueva foto
+	 *
+	 * @url /uploadPhoto
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @return void
+	 */
+	public function uploadPhoto(ORequest $req): void {
+		$status = 'ok';
+		$id = $req->getParamInt('id');
+		$photo = $req->getParamString('photo');
+
+		$id_photo   = 'null';
+		$created_at = 'null';
+		$updated_at = 'null';
+
+		if (is_null($id) || is_null($photo)) {
+			$status = 'error';
+		}
+
+		if ($status=='ok') {
+			$entry = new Entry();
+			if ($entry->find(['id'=>$id])) {
+				$result = $this->web_service->addPhoto($entry, $photo);
+
+				$id_photo   = $result['id'];
+				$created_at = '"'.$result['createdAt'].'"';
+				$updated_at = '"'.$result['updatedAt'].'"';
+			}
+			else {
+				$status = 'error';
+			}
+		}
+
+		$this->getTemplate()->add('status',     $status);
+		$this->getTemplate()->add('id',         $id_photo);
+		$this->getTemplate()->add('created_at', $created_at, 'nourlencode');
+		$this->getTemplate()->add('updated_at', $updated_at, 'nourlencode');
+	}
+
+	/**
+	 * Nueva acción deletePhoto
+	 *
+	 * @url /deletePhoto
+	 * @param ORequest $req Request object with method, headers, parameters and filters used
+	 * @return void
+	 */
+	public function deletePhoto(ORequest $req): void {
+		$status = 'ok';
+		$id = $req->getParamInt('id');
+
+		if (is_null($id)) {
+			$status = 'error';
+		}
+
+		if ($status=='ok') {
+			$photo = new Photo();
+			if ($photo->find(['id'=>$id])) {
+				$photo->deleteFull();
+			}
+			else {
+				$status = 'error';
+			}
+		}
+
+		$this->getTemplate()->add('status',     $status);
 	}
 }
