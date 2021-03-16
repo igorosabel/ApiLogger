@@ -1,8 +1,21 @@
 <?php declare(strict_types=1);
-/**
- * @type json
- * @prefix /api
-*/
+
+namespace OsumiFramework\App\Module;
+
+use OsumiFramework\OFW\Core\OModule;
+use OsumiFramework\OFW\Web\ORequest;
+use OsumiFramework\OFW\Routing\ORoute;
+use OsumiFramework\App\Model\Tag;
+use OsumiFramework\App\Model\Entry;
+use OsumiFramework\App\Model\User;
+use OsumiFramework\App\Model\Photo;
+use OsumiFramework\App\Service\webService;
+use OsumiFramework\OFW\Plugins\OToken;
+
+#[ORoute(
+	type: 'json',
+	prefix: '/api'
+)]
 class api extends OModule {
 	private ?webService $web_service = null;
 
@@ -13,10 +26,10 @@ class api extends OModule {
 	/**
 	 * Función para registrar un nuevo usuario
 	 *
-	 * @url /register
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/register')]
 	public function register(ORequest $req): void {
 		$status   = 'ok';
 		$username = $req->getParamString('username');
@@ -57,10 +70,10 @@ class api extends OModule {
 	/**
 	 * Función para iniciar sesión
 	 *
-	 * @url /login
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/login')]
 	public function login(ORequest $req): void {
 		$status   = 'ok';
 		$username = $req->getParamString('username');
@@ -82,7 +95,7 @@ class api extends OModule {
 					$tk = new OToken($this->getConfig()->getExtra('secret'));
 					$tk->addParam('id',   $id);
 					$tk->addParam('username', $username);
-					$tk->addParam('exp', mktime() + (24 * 60 * 60));
+					$tk->addParam('exp', time() + (24 * 60 * 60));
 					$token = $tk->getToken();
 				}
 				else {
@@ -103,11 +116,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener las entradas
 	 *
-	 * @url /getEntries
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/getEntries',
+		filter: 'loginFilter'
+	)]
 	public function getEntries(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
@@ -128,11 +143,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una entrada
 	 *
-	 * @url /getEntry
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/getEntry',
+		filter: 'loginFilter'
+	)]
 	public function getEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -165,10 +182,10 @@ class api extends OModule {
 	/**
 	 * Función para obtener el detalle de una entrada pública
 	 *
-	 * @url /getPublicEntry
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/getPublicEntry')]
 	public function getPublicEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -196,11 +213,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener la lista de tags de un usuario
 	 *
-	 * @url /getTags
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/getTags',
+		filter: 'loginFilter'
+	)]
 	public function getTags(ORequest $req): void {
 		$status = 'ok';
 		$filter = $req->getFilter('loginFilter');
@@ -221,11 +240,13 @@ class api extends OModule {
 	/**
 	 * Función para guardar una entrada
 	 *
-	 * @url /saveEntry
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/saveEntry',
+		filter: 'loginFilter'
+	)]
 	public function saveEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -258,11 +279,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener las entradas con una tag concreta
 	 *
-	 * @url /getTagEntries
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/getTagEntries',
+		filter: 'loginFilter'
+	)]
 	public function getTagEntries(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -289,11 +312,13 @@ class api extends OModule {
 	/**
 	 * Función para borrar una entrada
 	 *
-	 * @url /deleteEntry
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/deleteEntry',
+		filter: 'loginFilter'
+	)]
 	public function deleteEntry(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -325,11 +350,13 @@ class api extends OModule {
 	/**
 	 * Función para obtener las fotos de una entrada concreta
 	 *
-	 * @url /getPhotos
-	 * @filter loginFilter
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute(
+		'/getPhotos',
+		filter: 'loginFilter'
+	)]
 	public function getPhotos(ORequest $req): void {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
@@ -362,10 +389,10 @@ class api extends OModule {
 	/**
 	 * Función para obtener una foto
 	 *
-	 * @url /getEntryPhoto/:id
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/getEntryPhoto/:id')]
 	public function getEntryPhoto(ORequest $req): void {
 		$id = $req->getParamInt('id');
 		if (is_null($id)) {
@@ -392,10 +419,10 @@ class api extends OModule {
 	/**
 	 * Función para guardar una nueva foto
 	 *
-	 * @url /uploadPhoto
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/uploadPhoto')]
 	public function uploadPhoto(ORequest $req): void {
 		$status = 'ok';
 		$id = $req->getParamInt('id');
@@ -432,10 +459,10 @@ class api extends OModule {
 	/**
 	 * Nueva acción deletePhoto
 	 *
-	 * @url /deletePhoto
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
+	#[ORoute('/deletePhoto')]
 	public function deletePhoto(ORequest $req): void {
 		$status = 'ok';
 		$id = $req->getParamInt('id');

@@ -1,4 +1,10 @@
 <?php declare(strict_types=1);
+
+namespace OsumiFramework\App\Model;
+
+use OsumiFramework\OFW\DB\OModel;
+use OsumiFramework\App\Model\Tag;
+
 class Entry extends OModel {
 	/**
 	 * Configures current model object based on data-base table structure
@@ -7,48 +13,48 @@ class Entry extends OModel {
 		$table_name  = 'entry';
 		$model = [
 			'id' => [
-				'type'    => OCore::PK,
+				'type'    => OModel::PK,
 				'comment' => 'Id única de cada entrada'
 			],
 			'id_user' => [
-				'type'     => OCore::NUM,
+				'type'     => OModel::NUM,
 				'nullable' => false,
 				'default'  => null,
 				'ref'      => 'user.id',
 				'comment'  => 'Id del usuario que crea la entrada'
 			],
 			'title' => [
-				'type'     => OCore::TEXT,
+				'type'     => OModel::TEXT,
 				'nullable' => false,
 				'default'  => null,
 				'size'     => 100,
 				'comment'  => 'Título de la entrada'
 			],
 			'slug' => [
-				'type'     => OCore::TEXT,
+				'type'     => OModel::TEXT,
 				'nullable' => false,
 				'default'  => null,
 				'size'     => 100,
 				'comment'  => 'Slug del título de la entrada'
 			],
 			'body' => [
-				'type'     => OCore::LONGTEXT,
+				'type'     => OModel::LONGTEXT,
 				'nullable' => true,
 				'default'  => null,
 				'comment'  => 'Cuerpo de la entrada'
 			],
 			'is_public' => [
-				'type'     => OCore::BOOL,
+				'type'     => OModel::BOOL,
 				'nullable' => false,
 				'default'  => false,
 				'comment'  => 'Indica si la entrada es pública 1 o no 0'
 			],
 			'created_at' => [
-				'type'    => OCore::CREATED,
+				'type'    => OModel::CREATED,
 				'comment' => 'Fecha de creación del registro'
 			],
 			'updated_at' => [
-				'type'     => OCore::UPDATED,
+				'type'     => OModel::UPDATED,
 				'nullable' => true,
 				'default'  => null,
 				'comment'  => 'Fecha de última modificación del registro'

@@ -1,4 +1,10 @@
 <?php declare(strict_types=1);
+
+namespace OsumiFramework\OFW\Plugins;
+
+/**
+ * Utility class to encrypt/decrypt text strings using OpenSSL
+ */
 class OCrypt {
 	private ?string $key = null;
 	private string $method = 'aes-256-cbc';

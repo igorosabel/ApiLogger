@@ -1,4 +1,14 @@
 <?php declare(strict_types=1);
+
+namespace OsumiFramework\App\Service;
+
+use OsumiFramework\OFW\Core\OService;
+use OsumiFramework\OFW\DB\ODB;
+use OsumiFramework\App\Model\EntryTag;
+use OsumiFramework\App\Model\Tag;
+use OsumiFramework\App\Model\Entry;
+use OsumiFramework\App\Model\Photo;
+
 class webService extends OService {
 	/**
 	 * Load service tools
