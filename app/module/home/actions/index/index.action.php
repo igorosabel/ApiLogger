@@ -8,7 +8,7 @@ use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\OFW\Routing\OUrl;
 
 #[OModuleAction(
-	url: '/index'
+	url: '/'
 )]
 class indexAction extends OAction {
 	/**
