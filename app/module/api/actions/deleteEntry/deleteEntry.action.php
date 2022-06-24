@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Entry;
 
 #[OModuleAction(
 	url: '/deleteEntry',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web']
 )]
 class deleteEntryAction extends OAction {

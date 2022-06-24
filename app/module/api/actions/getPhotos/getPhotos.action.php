@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Entry;
 
 #[OModuleAction(
 	url: '/getPhotos',
-	filter: 'login'
+	filters: ['login']
 )]
 class getPhotosAction extends OAction {
 	/**

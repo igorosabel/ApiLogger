@@ -8,7 +8,7 @@ use OsumiFramework\OFW\Web\ORequest;
 
 #[OModuleAction(
 	url: '/getTags',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web']
 )]
 class getTagsAction extends OAction {

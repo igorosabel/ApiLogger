@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Tag;
 
 #[OModuleAction(
 	url: '/getTagEntries',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web']
 )]
 class getTagEntriesAction extends OAction {

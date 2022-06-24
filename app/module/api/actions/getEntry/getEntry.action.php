@@ -9,7 +9,7 @@ use OsumiFramework\App\Model\Entry;
 
 #[OModuleAction(
 	url: '/getEntry',
-	filter: 'login',
+	filters: ['login'],
 	services: ['web']
 )]
 class getEntryAction extends OAction {
