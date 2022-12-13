@@ -3,32 +3,39 @@
 namespace OsumiFramework\App\Model;
 
 use OsumiFramework\OFW\DB\OModel;
+use OsumiFramework\OFW\DB\OModelGroup;
+use OsumiFramework\OFW\DB\OModelField;
 
 class Photo extends OModel {
 	function __construct() {
-		$model = [
-			'id' => [
-				'type'    => OModel::PK,
-				'comment' => 'Id única de cada foto'
-			],
-			'id_entry' => [
-				'type'     => OModel::NUM,
-				'nullable' => false,
-				'default'  => null,
-				'ref'      => 'entry.id',
-				'comment'  => 'Id de la entrada en la que va la foto'
-			],
-			'created_at' => [
-				'type'    => OModel::CREATED,
-				'comment' => 'Fecha de creación del registro'
-			],
-			'updated_at' => [
-				'type'     => OModel::UPDATED,
-				'nullable' => true,
-				'default'  => null,
-				'comment'  => 'Fecha de última modificación del registro'
-			]
-		];
+		$model = new OModelGroup(
+			new OModelField(
+				name: 'id',
+				type: OMODEL_PK,
+				comment: 'Id única de cada foto'
+			),
+			new OModelField(
+				name: 'id_entry',
+				type: OMODEL_NUM,
+				nullable: false,
+				default: null,
+				ref: 'entry.id',
+				comment: 'Id de la entrada en la que va la foto'
+			),
+			new OModelField(
+				name: 'created_at',
+				type: OMODEL_CREATED,
+				comment: 'Fecha de creación del registro'
+			),
+			new OModelField(
+				name: 'updated_at',
+				type: OMODEL_UPDATED,
+				nullable: true,
+				default: null,
+				comment: 'Fecha de última modificación del registro'
+			)
+		);
+
 
 		parent::load($model);
 	}

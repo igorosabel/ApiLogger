@@ -3,59 +3,70 @@
 namespace OsumiFramework\App\Model;
 
 use OsumiFramework\OFW\DB\OModel;
+use OsumiFramework\OFW\DB\OModelGroup;
+use OsumiFramework\OFW\DB\OModelField;
 use OsumiFramework\App\Model\Tag;
 
 class Entry extends OModel {
 	function __construct() {
-		$model = [
-			'id' => [
-				'type'    => OModel::PK,
-				'comment' => 'Id única de cada entrada'
-			],
-			'id_user' => [
-				'type'     => OModel::NUM,
-				'nullable' => false,
-				'default'  => null,
-				'ref'      => 'user.id',
-				'comment'  => 'Id del usuario que crea la entrada'
-			],
-			'title' => [
-				'type'     => OModel::TEXT,
-				'nullable' => false,
-				'default'  => null,
-				'size'     => 100,
-				'comment'  => 'Título de la entrada'
-			],
-			'slug' => [
-				'type'     => OModel::TEXT,
-				'nullable' => false,
-				'default'  => null,
-				'size'     => 100,
-				'comment'  => 'Slug del título de la entrada'
-			],
-			'body' => [
-				'type'     => OModel::LONGTEXT,
-				'nullable' => true,
-				'default'  => null,
-				'comment'  => 'Cuerpo de la entrada'
-			],
-			'is_public' => [
-				'type'     => OModel::BOOL,
-				'nullable' => false,
-				'default'  => false,
-				'comment'  => 'Indica si la entrada es pública 1 o no 0'
-			],
-			'created_at' => [
-				'type'    => OModel::CREATED,
-				'comment' => 'Fecha de creación del registro'
-			],
-			'updated_at' => [
-				'type'     => OModel::UPDATED,
-				'nullable' => true,
-				'default'  => null,
-				'comment'  => 'Fecha de última modificación del registro'
-			]
-		];
+		$model = new OModelGroup(
+			new OModelField(
+				name: 'id',
+				type: OMODEL_PK,
+				comment: 'Id única de cada entrada'
+			),
+			new OModelField(
+				name: 'id_user',
+				type: OMODEL_NUM,
+				nullable: false,
+				default: null,
+				ref: 'user.id',
+				comment: 'Id del usuario que crea la entrada'
+			),
+			new OModelField(
+				name: 'title',
+				type: OMODEL_TEXT,
+				nullable: false,
+				default: null,
+				size: 100,
+				comment: 'Título de la entrada'
+			),
+			new OModelField(
+				name: 'slug',
+				type: OMODEL_TEXT,
+				nullable: false,
+				default: null,
+				size: 100,
+				comment: 'Slug del título de la entrada'
+			),
+			new OModelField(
+				name: 'body',
+				type: OMODEL_LONGTEXT,
+				nullable: true,
+				default: null,
+				comment: 'Cuerpo de la entrada'
+			),
+			new OModelField(
+				name: 'is_public',
+				type: OMODEL_BOOL,
+				nullable: false,
+				default: false,
+				comment: 'Indica si la entrada es pública 1 o no 0'
+			),
+			new OModelField(
+				name: 'created_at',
+				type: OMODEL_CREATED,
+				comment: 'Fecha de creación del registro'
+			),
+			new OModelField(
+				name: 'updated_at',
+				type: OMODEL_UPDATED,
+				nullable: true,
+				default: null,
+				comment: 'Fecha de última modificación del registro'
+			)
+		);
+
 
 		parent::load($model);
 	}
