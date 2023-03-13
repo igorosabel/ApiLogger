@@ -5,6 +5,7 @@ namespace OsumiFramework\App\Model;
 use OsumiFramework\OFW\DB\OModel;
 use OsumiFramework\OFW\DB\OModelGroup;
 use OsumiFramework\OFW\DB\OModelField;
+use OsumiFramework\OFW\DB\ODB;
 
 class Tag extends OModel {
 	function __construct() {
@@ -31,14 +32,6 @@ class Tag extends OModel {
 				comment: 'Texto de la etiqueta'
 			),
 			new OModelField(
-				name: 'slug',
-				type: OMODEL_TEXT,
-				nullable: false,
-				default: null,
-				size: 100,
-				comment: 'Slug del texto de la etiqueta'
-			),
-			new OModelField(
 				name: 'created_at',
 				type: OMODEL_CREATED,
 				comment: 'Fecha de creación del registro'
@@ -52,8 +45,25 @@ class Tag extends OModel {
 			)
 		);
 
-
 		parent::load($model);
+	}
+
+	private ?bool $is_public = null;
+
+	public function isPublic(): bool {
+		if (is_null($this->is_public)) {
+			$db = new ODB();
+			$sql = "SELECT * FROM `entry` WHERE `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` = ?) LIMIT 0,1";
+			$db->query($sql, [$this->get('id')]);
+
+			$res = $db->next();
+			$entry = new Entry();
+			$entry->update($res);
+
+			$this->is_public = $entry->get('is_public');
+		}
+
+		return $this->is_public;
 	}
 
 	/**

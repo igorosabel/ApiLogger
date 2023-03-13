@@ -44,7 +44,16 @@ class User extends OModel {
 			)
 		);
 
-
 		parent::load($model);
+	}
+
+	private ?string $token = null;
+
+	public function setToken($t): void {
+		$this->token = $t;
+	}
+
+	public function getToken(): ?string {
+		return $this->token;
 	}
 }

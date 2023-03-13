@@ -18,23 +18,25 @@ class getEntryPhotoAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
+		$status = 'ok';
 		$id = $req->getParamInt('id');
+		$photo = 'null';
+
 		if (is_null($id)) {
-			echo 'error';
-			exit;
+			$status = 'error';
 		}
-		else {
+
+		if ($status == 'ok') {
 			$p = new Photo();
 			if ($p->find(['id'=>$id])) {
-				$photo_data = $p->getImage();
-				header('Content-type: '.$photo_data['type']);
-				echo base64_decode($photo_data['image']);
-				exit;
+				$photo = '"'.trim($p->getData()).'"';
 			}
 			else {
-				echo 'error';
-				exit;
+				$status = 'error';
 			}
 		}
+
+		$this->getTemplate()->add('status', $status);
+		$this->getTemplate()->add('photo', $photo, 'nourlencode');
 	}
 }

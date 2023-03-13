@@ -22,9 +22,9 @@ class webService extends OService {
 	 *
 	 * @param int $id_user Id del usuario
 	 *
-	 * @return string Lista de entradas del usuario en JSON
+	 * @return array Lista de entradas del usuario
 	 */
-	public function getEntries(int $id_user): string{
+	public function getEntries(int $id_user): array{
 		$db = new ODB();
 		$sql = "SELECT * FROM `entry` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
 		$db->query($sql, [$id_user]);
@@ -34,10 +34,10 @@ class webService extends OService {
 			$entry = new Entry();
 			$entry->update($res);
 
-			array_push($list, $entry->toArray());
+			array_push($list, $entry);
 		}
 
-		return json_encode($list);
+		return $list;
 	}
 
 	/**
@@ -45,9 +45,9 @@ class webService extends OService {
 	 *
 	 * @param int $id_user Id del usuario
 	 *
-	 * @return string Lista de tags del usuario en JSON
+	 * @return array Lista de tags del usuario
 	 */
-	public function getTags(int $id_user): string {
+	public function getTags(int $id_user): array {
 		$db = new ODB();
 		$sql = "SELECT * FROM `tag` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
 		$db->query($sql, [$id_user]);
@@ -57,10 +57,10 @@ class webService extends OService {
 			$tag = new Tag();
 			$tag->update($res);
 
-			array_push($list, $tag->toArray());
+			array_push($list, $tag);
 		}
 
-		return json_encode($list);
+		return $list;
 	}
 
 	/**
@@ -87,14 +87,16 @@ class webService extends OService {
 
 			$tag = new Tag();
 			// Busco la etiqueta, si no existe creo una nueva
+			//echo "Busco la etiqueta, si no existe creo una nueva.\n";
 			if ($res = $db->next()) {
 				$tag->update($res);
+				//echo "La etiqueta ".$tag->get('id')." existe.\n";
 			}
 			else {
 				$tag->set('id_user', $entry->get('id_user'));
 				$tag->set('name', $t['name']);
-				$tag->set('slug', Base::slugify($t['name']));
 				$tag->save();
+				//echo "Nueva etiqueta ".$tag->get('id')." creada.\n";
 			}
 
 			$et = new EntryTag();
@@ -103,17 +105,18 @@ class webService extends OService {
 				$et->set('id_entry', $entry->get('id'));
 				$et->set('id_tag', $tag->get('id'));
 				$et->save();
+				//echo "La etiqueta no tenía una entrada asociada.\n";
 			}
 
 			// Si la entrada ya tenía esta etiqueta asociada la marco para no borrarla
-			if (array_key_exists($to_be_checked, $tag->get('id'))) {
+			if (array_key_exists($tag->get('id'), $to_be_checked)) {
 				$to_be_checked[$tag->get('id')] = true;
 			}
 		}
 
 		// Las tags que ya no estén asociadas borro la relación entre la entrada y la etiqueta
 		foreach ($to_be_checked as $id_tag => $tbc) {
-			if (!tbc) {
+			if (!$tbc) {
 				$sql = "DELETE FROM `entry_tag` WHERE `id_tag` = ?";
 				$db->query($sql, [$id_tag]);
 			}
@@ -141,9 +144,9 @@ class webService extends OService {
 	 *
 	 * @param int Id de la tag
 	 *
-	 * @return string Listado de entradas en formato JSON
+	 * @return array Listado de entradas
 	 */
-	public function getTagEntries(int $id_tag): string {
+	public function getTagEntries(int $id_tag): array {
 		$db = new ODB();
 		$sql = "SELECT * FROM `entry` WHERE `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` = ?) ORDER BY `updated_at` DESC";
 		$db->query($sql, [$id_tag]);
@@ -153,10 +156,10 @@ class webService extends OService {
 			$entry = new Entry();
 			$entry->update($res);
 
-			array_push($list, $entry->toArray());
+			array_push($list, $entry);
 		}
 
-		return json_encode($list);
+		return $list;
 	}
 
 	/**

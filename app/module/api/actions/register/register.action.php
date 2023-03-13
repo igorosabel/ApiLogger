@@ -7,6 +7,7 @@ use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\OFW\Plugins\OToken;
 use OsumiFramework\App\Model\User;
+use OsumiFramework\App\Component\Model\UserComponent;
 
 #[OModuleAction(
 	url: '/register'
@@ -22,9 +23,7 @@ class registerAction extends OAction {
 		$status   = 'ok';
 		$username = $req->getParamString('username');
 		$pass     = $req->getParamString('pass');
-
-		$id    = 'null';
-		$token = '';
+		$user_component = new UserComponent(['user' => null]);
 
 		if (is_null($username) || is_null($pass)) {
 			$status = 'error';
@@ -46,12 +45,13 @@ class registerAction extends OAction {
 				$tk->addParam('id',   $id);
 				$tk->addParam('username', $username);
 				$token = $tk->getToken();
+				$u->setToken($token);
+
+				$user_component->setValue('user', $u);
 			}
 
-			$this->getTemplate()->add('status',   $status);
-			$this->getTemplate()->add('id',       $id);
-			$this->getTemplate()->add('username', $username);
-			$this->getTemplate()->add('token',    $token);
+			$this->getTemplate()->add('status', $status);
+			$this->getTemplate()->add('user',   $user_component);
 		}
 	}
 }

@@ -6,6 +6,7 @@ use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\App\Model\Entry;
+use OsumiFramework\App\Component\Model\EntryComponent;
 
 #[OModuleAction(
 	url: '/getEntry',
@@ -23,17 +24,17 @@ class getEntryAction extends OAction {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('login');
+		$entry_component = new EntryComponent(['entry' => null]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
-		$entry = 'null';
 
 		if ($status=='ok') {
 			$e = new Entry();
 			if ($e->find(['id'=>$id])) {
 				if ($e->get('id_user')==$filter['id']) {
-					$entry = json_encode($e->toArray());
+					$entry_component->setValue('entry', $e);
 				}
 				else {
 					$status = 'error';
@@ -45,6 +46,6 @@ class getEntryAction extends OAction {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('entry',  $entry, 'nourlencode');
+		$this->getTemplate()->add('entry',  $entry_component);
 	}
 }

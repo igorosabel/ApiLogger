@@ -5,6 +5,7 @@ namespace OsumiFramework\App\Module\Action;
 use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
+use OsumiFramework\App\Component\Model\EntryListComponent;
 
 #[OModuleAction(
 	url: '/getEntries',
@@ -21,6 +22,7 @@ class getEntriesAction extends OAction {
 	public function run(ORequest $req):void {
 		$status = 'ok';
 		$filter = $req->getFilter('login');
+		$entry_list_component = new EntryListComponent(['list' => []]);
 
 		if (is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
@@ -28,10 +30,10 @@ class getEntriesAction extends OAction {
 		$list = '[]';
 
 		if ($status=='ok') {
-			$list = $this->web_service->getEntries($filter['id']);
+			$entry_list_component->setValue('list', $this->web_service->getEntries($filter['id']));
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('list',   $list, 'nourlencode');
+		$this->getTemplate()->add('list',   $entry_list_component);
 	}
 }

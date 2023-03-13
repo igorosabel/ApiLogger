@@ -19,7 +19,6 @@ class Entry extends OModel {
 				name: 'id_user',
 				type: OMODEL_NUM,
 				nullable: false,
-				default: null,
 				ref: 'user.id',
 				comment: 'Id del usuario que crea la entrada'
 			),
@@ -27,17 +26,8 @@ class Entry extends OModel {
 				name: 'title',
 				type: OMODEL_TEXT,
 				nullable: false,
-				default: null,
 				size: 100,
 				comment: 'Título de la entrada'
-			),
-			new OModelField(
-				name: 'slug',
-				type: OMODEL_TEXT,
-				nullable: false,
-				default: null,
-				size: 100,
-				comment: 'Slug del título de la entrada'
 			),
 			new OModelField(
 				name: 'body',
@@ -66,7 +56,6 @@ class Entry extends OModel {
 				comment: 'Fecha de última modificación del registro'
 			)
 		);
-
 
 		parent::load($model);
 	}
@@ -110,7 +99,7 @@ class Entry extends OModel {
 			$tag = new Tag();
 			$tag->update($res);
 
-			array_push($list, $tag->toArray());
+			array_push($list, $tag);
 		}
 
 		$this->setTags($list);
@@ -155,7 +144,7 @@ class Entry extends OModel {
 			$photo = new Photo();
 			$photo->update($res);
 
-			array_push($list, $photo->toArray());
+			array_push($list, $photo);
 		}
 
 		$this->setPhotos($list);
@@ -170,22 +159,5 @@ class Entry extends OModel {
 		$sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
 		$this->db->query($sql, [$this->get('id')]);
 		$this->delete();
-	}
-
-	/**
-	 * Devuelve los datos de una entrada como un array
-	 *
-	 * @return array Datos de la entrada en formato array
-	 */
-	public function toArray(): array {
-		return [
-			'id'        => $this->get('id'),
-			'title'     => $this->get('title'),
-			'slug'      => $this->get('slug'),
-			'body'      => $this->get('body'),
-			'createdAt' => $this->get('created_at', 'd/m/Y'),
-			'updatedAt' => $this->get('updated_at', 'd/m/Y'),
-			'tags'      => $this->getTags()
-		];
 	}
 }

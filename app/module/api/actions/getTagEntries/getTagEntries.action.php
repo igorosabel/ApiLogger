@@ -6,6 +6,8 @@ use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\App\Model\Tag;
+use OsumiFramework\App\Component\Model\TagComponent;
+use OsumiFramework\App\Component\Model\EntryListComponent;
 
 #[OModuleAction(
 	url: '/getTagEntries',
@@ -23,22 +25,23 @@ class getTagEntriesAction extends OAction {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('login');
+		$tag_component = new TagComponent(['tag' => null]);
+		$entry_list_component = new EntryListComponent(['list' => []]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 		  $status = 'error';
 		}
 		$tag  = 'null';
-		$list = '[]';
 
 		if ($status=='ok') {
 			$t = new Tag();
 			$t->find(['id' => $id]);
-			$tag = json_encode($t->toArray());
-			$list = $this->web_service->getTagEntries($id);
+			$tag_component->setValue('tag', $t);
+			$entry_list_component->setValue('list', $this->web_service->getTagEntries($id));
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('tag',    $tag,  'nourlencode');
-		$this->getTemplate()->add('list',   $list, 'nourlencode');
+		$this->getTemplate()->add('tag',    $tag_component);
+		$this->getTemplate()->add('list',   $entry_list_component);
 	}
 }

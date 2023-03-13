@@ -5,6 +5,7 @@ namespace OsumiFramework\App\Module\Action;
 use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
+use OsumiFramework\OFW\Tools\OTools;
 use OsumiFramework\App\Model\Entry;
 
 #[OModuleAction(
@@ -38,7 +39,6 @@ class saveEntryAction extends OAction {
 			}
 			$entry->set('id_user', $filter['id']);
 			$entry->set('title',   $title);
-			$entry->set('slug',    OTools::slugify($title));
 			$entry->set('body',    $body);
 			$entry->save();
 

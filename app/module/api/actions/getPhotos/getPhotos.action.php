@@ -6,6 +6,7 @@ use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
 use OsumiFramework\OFW\Web\ORequest;
 use OsumiFramework\App\Model\Entry;
+use OsumiFramework\App\Component\Model\PhotoListComponent;
 
 #[OModuleAction(
 	url: '/getPhotos',
@@ -22,17 +23,17 @@ class getPhotosAction extends OAction {
 		$status = 'ok';
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('login');
+		$photo_list_component = new PhotoListComponent(['list' => []]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
-		$list = '[]';
 
 		if ($status=='ok') {
 			$entry = new Entry();
 			if ($entry->find(['id'=>$id])) {
 				if ($entry->get('id_user')==$filter['id']) {
-					$list = json_encode($entry->getPhotos());
+					$photo_list_component->setValue('list', $entry->getPhotos());
 				}
 				else {
 					$status = 'error';
@@ -44,6 +45,6 @@ class getPhotosAction extends OAction {
 		}
 
 		$this->getTemplate()->add('status', $status);
-		$this->getTemplate()->add('list',   $list, 'nourlencode');
+		$this->getTemplate()->add('list',   $photo_list_component);
 	}
 }
