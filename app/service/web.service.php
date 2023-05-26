@@ -78,7 +78,7 @@ class webService extends OService {
 		$to_be_checked = [];
 		// Busco etiquetas de la entrada y las "marco" para borrar
 		foreach ($entry_tags as $entry_tag) {
-			$to_be_checked[$entry_tag['id']] = false;
+			$to_be_checked[$entry_tag->get('id')] = false;
 		}
 
 		foreach ($tags as $t) {

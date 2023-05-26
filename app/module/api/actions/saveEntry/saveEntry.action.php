@@ -21,14 +21,15 @@ class saveEntryAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$status = 'ok';
-		$id     = $req->getParamInt('id');
-		$title  = $req->getParamString('title');
-		$body   = $req->getParamString('body');
-		$tags   = $req->getParam('tags');
-		$filter = $req->getFilter('login');
+		$status    = 'ok';
+		$id        = $req->getParamInt('id');
+		$title     = $req->getParamString('title');
+		$body      = $req->getParamString('body');
+		$tags      = $req->getParam('tags');
+		$is_public = $req->getParamBool('isPublic');
+		$filter    = $req->getFilter('login');
 
-		if (is_null($title) || is_null($body) || is_null($tags) || is_null($filter) || !array_key_exists('id', $filter)) {
+		if (is_null($title) || is_null($body) || is_null($tags) || is_null($filter) || is_null($is_public) || !array_key_exists('id', $filter)) {
 			$status = 'error';
 		}
 
@@ -37,9 +38,10 @@ class saveEntryAction extends OAction {
 			if (!is_null($id)) {
 				$entry->find(['id'=>$id]);
 			}
-			$entry->set('id_user', $filter['id']);
-			$entry->set('title',   $title);
-			$entry->set('body',    $body);
+			$entry->set('id_user',   $filter['id']);
+			$entry->set('title',     $title);
+			$entry->set('body',      $body);
+			$entry->set('is_public', $is_public);
 			$entry->save();
 
 			$this->web_service->saveTags($entry, $tags);
