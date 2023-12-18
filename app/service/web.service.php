@@ -56,6 +56,7 @@ class webService extends OService {
 		while ($res = $db->next()) {
 			$tag = new Tag();
 			$tag->update($res);
+			$tag->loadNum();
 
 			array_push($list, $tag);
 		}
@@ -180,5 +181,72 @@ class webService extends OService {
 		file_put_contents($route, $data);
 
 		return $photo->toArray();
+	}
+
+	/**
+	 * Función para obtener la lista de días en los que han habido entradas de un mes concreto.
+	 *
+	 * @param int $id_user Id del usuario del que obtener las entradas
+	 *
+	 * @param int $month Mes en el que buscar entradas
+	 *
+	 * @param int $year Año en el que buscar entradas
+	 *
+	 * @return array Lista de días del mes elegido en el que hay entradas
+	 */
+	public function getCalendar(int $id_user, int $month, int $year): array {
+		$db = new ODB();
+		$sql = "SELECT DAY(`created_at`) AS `fecha` FROM `entry` WHERE `id_user` = ? AND MONTH(`created_at`) = ? AND YEAR(`created_at`) = ? GROUP BY DAY(`created_at`)";
+		$db->query($sql, [$id_user, $month, $year]);
+		$list = [];
+
+		while ($res = $db->next()) {
+			$day_str = $res['fecha'] < 10 ? '0'.$res['fecha'] : $res['fecha'];
+			$month_str = $month < 10 ? '0'.$month : $month;
+
+			array_push($list, $day_str.'-'.$month_str);
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Función para obtener el listado de entradas de la home
+	 *
+	 * @param int $id_user Id del usuario del que obtener las entradas
+	 *
+	 * @param int $day Día en el que buscar entradas
+	 *
+	 * @param int $month Mes en el que buscar entradas
+	 *
+	 * @param int $year Año en el que buscar entradas
+	 *
+	 * @param array $tags Lista de tags por las que filtrar
+	 *
+	 * @return array Listado de entradas obtenido
+	 */
+	public function getHomeEntries(int $id_user, int|null $day, int $month, int $year, array $tags): array {
+		$db = new ODB();
+		$sql = "SELECT * FROM `entry` WHERE `id_user` = ? AND MONTH(`created_at`) = ? AND YEAR(`created_at`) = ?";
+		if (count($tags) > 0) {
+			$sql .= " AND `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` IN (".implode(',', $tags)."))";
+		}
+		if (!is_null($day)) {
+			$sql .= " AND DAY(`created_at`) = ?";
+			$db->query($sql, [$id_user, $month, $year, $day]);
+		}
+		else {
+			$db->query($sql, [$id_user, $month, $year]);
+		}
+		$list = [];
+
+		while ($res = $db->next()) {
+			$entry = new Entry();
+			$entry->update($res);
+
+			array_push($list, $entry);
+		}
+
+		return $list;
 	}
 }

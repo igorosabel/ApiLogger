@@ -66,6 +66,24 @@ class Tag extends OModel {
 		return $this->is_public;
 	}
 
+	private int $num = 0;
+
+	public function setNum(int $num): void {
+		$this->num = $num;
+	}
+
+	public function getNum(): int {
+		return $this->num;
+	}
+
+	public function loadNum(): void {
+		$db = new ODB();
+		$sql = "SELECT COUNT(*) AS `num` FROM `entry_tag` WHERE `id_tag` = ?";
+		$db->query($sql, [$this->get('id')]);
+		$res = $db->next();
+		$this->setNum($res['num']);
+	}
+
 	/**
 	 * Devuelve los datos de la tag como un array
 	 *
