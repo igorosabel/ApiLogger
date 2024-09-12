@@ -4,7 +4,7 @@ namespace OsumiFramework\App\Module\Action;
 
 use OsumiFramework\OFW\Routing\OModuleAction;
 use OsumiFramework\OFW\Routing\OAction;
-use OsumiFramework\OFW\Web\ORequest;
+use OsumiFramework\App\DTO\HomeDTO;
 use OsumiFramework\App\Component\Model\EntryListComponent;
 use OsumiFramework\App\Component\Model\TagListComponent;
 
@@ -20,29 +20,24 @@ class getHomeAction extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(HomeDTO $data):void {
 		$status   = 'ok';
-		$day      = $req->getParamInt('day');
-		$month    = $req->getParamInt('month');
-		$year     = $req->getParamInt('year');
-		$tags     = $req->getParam('tags');
-		$filter   = $req->getFilter('login');
 		$calendar = '';
 		$entry_list_component = new EntryListComponent(['list' => []]);
 		$tag_list_component   = new TagListComponent(['list' => []]);
 
-		if (!array_key_exists('id', $filter)) {
+		if (!$data->isValid()) {
 			$status = 'error';
 		}
 
 		if  ($status == 'ok') {
-			$calendar_list = $this->web_service->getCalendar($filter['id'], $month, $year);
+			$calendar_list = $this->web_service->getCalendar($data->getIdUser(), $data->getMonth(), $data->getYear());
 			if (count($calendar_list) > 0) {
 				$calendar = '"'.implode('", "', $calendar_list).'"';
 			}
 
-			$entry_list_component->setValue('list', $this->web_service->getHomeEntries($filter['id'], $day, $month, $year, $tags));
-			$tag_list_component->setValue('list',   $this->web_service->getTags($filter['id']));
+			$entry_list_component->setValue('list', $this->web_service->getHomeEntries($data->getIdUser(), $data->getDay(), $data->getMonth(), $data->getYear(), $data->getTags(), $data->getFirst()));
+			$tag_list_component->setValue('list',   $this->web_service->getTags($data->getIdUser()));
 		}
 
 		$this->getTemplate()->add('status',   $status);

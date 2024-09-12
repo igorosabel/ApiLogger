@@ -225,18 +225,24 @@ class webService extends OService {
 	 *
 	 * @return array Listado de entradas obtenido
 	 */
-	public function getHomeEntries(int $id_user, int|null $day, int $month, int $year, array $tags): array {
+	public function getHomeEntries(int $id_user, int|null $day, int $month, int $year, array $tags, bool $first): array {
 		$db = new ODB();
-		$sql = "SELECT * FROM `entry` WHERE `id_user` = ? AND MONTH(`created_at`) = ? AND YEAR(`created_at`) = ?";
-		if (count($tags) > 0) {
-			$sql .= " AND `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` IN (".implode(',', $tags)."))";
-		}
-		if (!is_null($day)) {
-			$sql .= " AND DAY(`created_at`) = ?";
-			$db->query($sql, [$id_user, $month, $year, $day]);
+		if ($first) {
+			$sql = "SELECT * FROM `entry` WHERE `id_user` = ? LIMIT 0,10";
+			$db->query($sql, [$id_user]);
 		}
 		else {
-			$db->query($sql, [$id_user, $month, $year]);
+			$sql = "SELECT * FROM `entry` WHERE `id_user` = ? AND MONTH(`created_at`) = ? AND YEAR(`created_at`) = ?";
+			if (count($tags) > 0) {
+				$sql .= " AND `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` IN (".implode(',', $tags)."))";
+			}
+			if (!is_null($day)) {
+				$sql .= " AND DAY(`created_at`) = ?";
+				$db->query($sql, [$id_user, $month, $year, $day]);
+			}
+			else {
+				$db->query($sql, [$id_user, $month, $year]);
+			}
 		}
 		$list = [];
 
