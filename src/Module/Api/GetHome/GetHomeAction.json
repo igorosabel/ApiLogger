@@ -1,0 +1,12 @@
+{
+	"status": "{{status}}",
+	"calendar": [
+{{calendar}}
+	],
+	"tags": [
+{{tags}}
+	],
+	"entries": [
+{{entries}}
+	]
+}
