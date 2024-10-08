@@ -11,6 +11,10 @@ class GetEntryAction extends OAction {
   public string $status = 'ok';
   public ?EntryComponent $entry = null;
 
+  public function __construct() {
+    $this->entry = new EntryComponent(['Entry' => null]);
+  }
+
 	/**
 	 * Función para obtener el detalle de una entrada
 	 *
@@ -20,16 +24,15 @@ class GetEntryAction extends OAction {
 	public function run(ORequest $req):void {
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
-		$this->entry = new EntryComponent(['Entry' => null]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$e = new Entry();
 			if ($e->find(['id'=> $id])) {
-				if ($e->get('id_user') == $filter['id']) {
+				if ($e->get('id_user') === $filter['id']) {
 					$this->entry->setValue('Entry', $e);
 				}
 				else {

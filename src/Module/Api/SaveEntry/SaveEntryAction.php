@@ -5,10 +5,17 @@ namespace Osumi\OsumiFramework\App\Module\Api\SaveEntry;
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\Tools\OTools;
+use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Entry;
 
 class SaveEntryAction extends OAction {
+  private ?WebService $ws = null;
+
   public string $status = 'ok';
+
+  public function __construct() {
+    $this->ws = inject(WebService::class);
+  }
 
 	/**
 	 * Función para guardar una entrada
@@ -28,10 +35,10 @@ class SaveEntryAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$entry = new Entry();
 			if (!is_null($id)) {
-				$entry->find(['id'=>$id]);
+				$entry->find(['id' => $id]);
 			}
 			$entry->set('id_user',   $filter['id']);
 			$entry->set('title',     $title);
@@ -39,7 +46,7 @@ class SaveEntryAction extends OAction {
 			$entry->set('is_public', $is_public);
 			$entry->save();
 
-			$this->service['Web']->saveTags($entry, $tags);
+			$this->ws->saveTags($entry, $tags);
 		}
 	}
 }

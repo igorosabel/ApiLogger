@@ -11,6 +11,10 @@ class GetPublicEntryAction extends OAction {
   public string $status = 'ok';
   public ?EntryComponent $entry = null;
 
+  public function __construct() {
+    $this->entry = new EntryComponent(['Entry' => null]);
+  }
+
 	/**
 	 * Función para obtener el detalle de una entrada pública
 	 *
@@ -18,10 +22,9 @@ class GetPublicEntryAction extends OAction {
 	 * @return void
 	 */
 	public function run(ORequest $req):void {
-		$id          = $req->getParamInt('id');
-		$this->entry = new EntryComponent(['Entry' => null]);
+		$id = $req->getParamInt('id');
 
-		if ($this->status == 'ok') {
+		if ($this->status === 'ok') {
 			$e = new Entry();
 			if ($e->find(['id' => $id])) {
 				if ($e->get('is_public')) {

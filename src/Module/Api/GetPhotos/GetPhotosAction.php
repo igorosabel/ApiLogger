@@ -11,6 +11,10 @@ class GetPhotosAction extends OAction {
   public string $status = 'ok';
   public ?PhotoListComponent $list = null;
 
+  public function __construct() {
+    $this->list = new PhotoListComponent(['list' => []]);
+  }
+
 	/**
 	 * Función para obtener las fotos de una entrada concreta
 	 *
@@ -20,16 +24,15 @@ class GetPhotosAction extends OAction {
 	public function run(ORequest $req):void {
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
-		$this->list = new PhotoListComponent(['list' => []]);
 
 		if (is_null($id) || is_null($filter) || !array_key_exists('id', $filter)) {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$entry = new Entry();
 			if ($entry->find(['id' => $id])) {
-				if ($entry->get('id_user') == $filter['id']) {
+				if ($entry->get('id_user') === $filter['id']) {
 					$this->list->setValue('list', $entry->getPhotos());
 				}
 				else {

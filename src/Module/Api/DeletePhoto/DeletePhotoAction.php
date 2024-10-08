@@ -22,7 +22,7 @@ class DeletePhotoAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$photo = new Photo();
 			if ($photo->find(['id' => $id])) {
 				$photo->deleteFull();

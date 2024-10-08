@@ -4,10 +4,17 @@ namespace Osumi\OsumiFramework\App\Module\Api\DeleteEntry;
 
 use Osumi\OsumiFramework\Routing\OAction;
 use Osumi\OsumiFramework\Web\ORequest;
+use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Entry;
 
 class DeleteEntryAction extends OAction {
+  private ?WebService $ws = null;
+
   public string $status = 'ok';
+
+  public function __construct() {
+    $this->ws = inject(WebService::class);
+  }
 
 	/**
 	 * Función para borrar una entrada
@@ -23,12 +30,12 @@ class DeleteEntryAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$entry = new Entry();
 			if ($entry->find(['id' => $id])) {
-				if ($entry->get('id_user') == $filter['id']) {
+				if ($entry->get('id_user') === $filter['id']) {
 					$entry->deleteFull();
-					$this->service['Web']->cleanEmptyTags($filter['id']);
+					$this->ws->cleanEmptyTags($filter['id']);
 				}
 				else {
 					$this->status = 'error';

@@ -12,6 +12,10 @@ class RegisterAction extends OAction {
   public string $status = 'ok';
   public ?UserComponent $user = null;
 
+  public function __construct() {
+    $this->user = new UserComponent(['User' => null]);
+  }
+
 	/**
 	 * Función para registrar un nuevo usuario
 	 *
@@ -21,13 +25,12 @@ class RegisterAction extends OAction {
 	public function run(ORequest $req):void {
 		$username   = $req->getParamString('username');
 		$pass       = $req->getParamString('pass');
-		$this->user = new UserComponent(['User' => null]);
 
 		if (is_null($username) || is_null($pass)) {
 			$this->status = 'error';
 		}
 
-		if ($this->status=='ok') {
+		if ($this->status === 'ok') {
 			$u = new User();
 			if ($u->find(['username' => $username])) {
 				$this->status = 'error';

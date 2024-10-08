@@ -8,7 +8,7 @@ use Osumi\OsumiFramework\App\Model\Photo;
 
 class GetEntryPhotoAction extends OAction {
   public string $status = 'ok';
-  public string $photo = 'null';
+  public string $photo  = 'null';
 
 	/**
 	 * Función para obtener una foto
@@ -23,10 +23,10 @@ class GetEntryPhotoAction extends OAction {
 			$this->status = 'error';
 		}
 
-		if ($this->status == 'ok') {
+		if ($this->status === 'ok') {
 			$p = new Photo();
 			if ($p->find(['id' => $id])) {
-				$this->photo = '"'.trim($p->getData()).'"';
+				$this->photo = '"' . trim($p->getData()) . '"';
 			}
 			else {
 				$this->status = 'error';
