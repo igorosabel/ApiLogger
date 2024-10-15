@@ -4,4 +4,6 @@ namespace Osumi\OsumiFramework\App\Component\Model\EntryList;
 
 use Osumi\OsumiFramework\Core\OComponent;
 
-class EntryListComponent extends OComponent {}
+class EntryListComponent extends OComponent {
+  public array $list = [];
+}

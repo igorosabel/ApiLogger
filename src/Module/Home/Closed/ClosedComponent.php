@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Osumi\OsumiFramework\App\Module\Api\NotFound;
+namespace Osumi\OsumiFramework\App\Module\Home\Closed;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
-use Osumi\OsumiFramework\OFW\Routing\OUrl;
+use Osumi\OsumiFramework\Routing\OUrl;
 
-class NotFoundAction extends OAction {
+class ClosedComponent extends OAction {
 	/**
 	 * Function description
 	 *

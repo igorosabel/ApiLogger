@@ -2,11 +2,11 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\Index;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\Routing\OUrl;
 
-class IndexAction extends OAction {
+class IndexComponent extends OComponent {
 	/**
 	 * Function description
 	 *

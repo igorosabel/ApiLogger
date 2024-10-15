@@ -4,4 +4,6 @@ namespace Osumi\OsumiFramework\App\Component\Model\PhotoList;
 
 use Osumi\OsumiFramework\Core\OComponent;
 
-class PhotoListComponent extends OComponent {}
+class PhotoListComponent extends OComponent {
+  public array $list = [];
+}

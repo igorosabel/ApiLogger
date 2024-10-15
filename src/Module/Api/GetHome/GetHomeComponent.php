@@ -2,13 +2,13 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetHome;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\App\DTO\HomeDTO;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Component\Model\EntryList\EntryListComponent;
 use Osumi\OsumiFramework\App\Component\Model\TagList\TagListComponent;
 
-class GetHomeAction extends OAction {
+class GetHomeComponent extends OComponent {
   private ?WebService $ws = null;
 
   public string $status   = 'ok';
@@ -17,9 +17,10 @@ class GetHomeAction extends OAction {
   public ?TagListComponent $tags = null;
 
   public function __construct() {
+    parent::__construct();
     $this->ws = inject(WebService::class);
-    $this->entries = new EntryListComponent(['list' => []]);
-		$this->tags = new TagListComponent(['list' => []]);
+    $this->entries = new EntryListComponent();
+		$this->tags = new TagListComponent();
   }
 
 	/**
@@ -39,8 +40,8 @@ class GetHomeAction extends OAction {
 				$this->calendar = '"' . implode('", "', $calendar_list) . '"';
 			}
 
-			$this->entries->setValue('list', $this->ws->getHomeEntries($data->getIdUser(), $data->getDay(), $data->getMonth(), $data->getYear(), $data->getTags(), $data->getFirst()));
-			$this->tags->setValue('list', $this->ws->getTags($data->getIdUser()));
+			$this->entries->list = $this->ws->getHomeEntries($data->getIdUser(), $data->getDay(), $data->getMonth(), $data->getYear(), $data->getTags(), $data->getFirst());
+			$this->tags->list = $this->ws->getTags($data->getIdUser());
 		}
 	}
 }

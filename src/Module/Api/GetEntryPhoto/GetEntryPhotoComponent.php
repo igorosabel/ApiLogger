@@ -2,11 +2,11 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetEntryPhoto;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Model\Photo;
 
-class GetEntryPhotoAction extends OAction {
+class GetEntryPhotoComponent extends OComponent {
   public string $status = 'ok';
   public string $photo  = 'null';
 

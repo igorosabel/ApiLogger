@@ -2,20 +2,21 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetTags;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Component\Model\TagList\TagListComponent;
 
-class GetTagsAction extends OAction {
+class GetTagsComponent extends OComponent {
   private ?WebService $ws = null;
 
   public string $status = 'ok';
   public ?TagListComponent $list = null;
 
   public function __construct() {
+    parent::__construct();
     $this->ws = inject(WebService::class);
-    $this->list = new TagListComponent(['list' => []]);
+    $this->list = new TagListComponent();
   }
 
 	/**
@@ -32,7 +33,7 @@ class GetTagsAction extends OAction {
 		}
 
 		if ($this->status === 'ok') {
-			$this->list->setValue('list', $this->ws->getTags($filter['id']));
+			$this->list->list = $this->ws->getTags($filter['id']);
 		}
 	}
 }

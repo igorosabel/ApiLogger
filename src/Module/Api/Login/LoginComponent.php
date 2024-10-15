@@ -2,18 +2,19 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\Login;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\Plugins\OToken;
 use Osumi\OsumiFramework\App\Model\User;
 use Osumi\OsumiFramework\App\Component\Model\User\UserComponent;
 
-class LoginAction extends OAction {
+class LoginComponent extends OComponent {
   public string $status = 'ok';
   public ?UserComponent $user = null;
 
   public function __construct() {
-    $this->user = new UserComponent(['User' => null]);
+    parent::__construct();
+    $this->user = new UserComponent();
   }
 
 	/**
@@ -43,7 +44,7 @@ class LoginAction extends OAction {
 					$token = $tk->getToken();
 					$u->setToken($token);
 
-					$this->user->setValue('User', $u);
+					$this->user->user = $u;
 				}
 				else {
 					$this->status = 'error';

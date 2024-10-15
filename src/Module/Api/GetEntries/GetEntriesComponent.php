@@ -2,20 +2,21 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetEntries;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Component\Model\EntryList\EntryListComponent;
 
-class GetEntriesAction extends OAction {
+class GetEntriesComponent extends OComponent {
   private ?WebService $ws = null;
 
   public string $status = 'ok';
   public ?EntryListComponent $list = null;
 
   public function __construct() {
+    parent::__construct();
     $this->ws = inject(WebService::class);
-    $this->list = new EntryListComponent(['list' => []]);
+    $this->list = new EntryListComponent();
   }
 
 	/**
@@ -32,7 +33,7 @@ class GetEntriesAction extends OAction {
 		}
 
 		if ($this->status === 'ok') {
-			$this->list->setValue('list', $this->ws->getEntries($filter['id']));
+			$this->list->list = $this->ws->getEntries($filter['id']);
 		}
 	}
 }

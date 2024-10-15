@@ -2,17 +2,18 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\GetPhotos;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Model\Entry;
 use Osumi\OsumiFramework\App\Component\Model\PhotoList\PhotoListComponent;
 
-class GetPhotosAction extends OAction {
+class GetPhotosComponent extends OComponent {
   public string $status = 'ok';
   public ?PhotoListComponent $list = null;
 
   public function __construct() {
-    $this->list = new PhotoListComponent(['list' => []]);
+    parent::__construct();
+    $this->list = new PhotoListComponent();
   }
 
 	/**
@@ -33,7 +34,7 @@ class GetPhotosAction extends OAction {
 			$entry = new Entry();
 			if ($entry->find(['id' => $id])) {
 				if ($entry->get('id_user') === $filter['id']) {
-					$this->list->setValue('list', $entry->getPhotos());
+					$this->list->list = $entry->getPhotos();
 				}
 				else {
 					$this->status = 'error';

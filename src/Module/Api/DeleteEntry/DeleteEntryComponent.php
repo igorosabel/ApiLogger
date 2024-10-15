@@ -2,17 +2,18 @@
 
 namespace Osumi\OsumiFramework\App\Module\Api\DeleteEntry;
 
-use Osumi\OsumiFramework\Routing\OAction;
+use Osumi\OsumiFramework\Core\OComponent;
 use Osumi\OsumiFramework\Web\ORequest;
 use Osumi\OsumiFramework\App\Service\WebService;
 use Osumi\OsumiFramework\App\Model\Entry;
 
-class DeleteEntryAction extends OAction {
+class DeleteEntryComponent extends OComponent {
   private ?WebService $ws = null;
 
   public string $status = 'ok';
 
   public function __construct() {
+    parent::__construct();
     $this->ws = inject(WebService::class);
   }
 

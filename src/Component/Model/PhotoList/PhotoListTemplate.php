@@ -1,10 +1,10 @@
 <?php
 use Osumi\OsumiFramework\App\Component\Model\Photo\PhotoComponent;
 
-foreach ($values['list'] as $i => $Photo) {
-  $component = new PhotoComponent([ 'Photo' => $Photo ]);
+foreach ($list as $i => $photo) {
+  $component = new PhotoComponent([ 'photo' => $photo ]);
 	echo strval($component);
-	if ($i<count($values['list'])-1) {
+	if ($i < count($list) - 1) {
 		echo ",\n";
 	}
 }

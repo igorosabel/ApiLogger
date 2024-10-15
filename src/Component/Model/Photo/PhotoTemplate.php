@@ -1,9 +1,9 @@
-<?php if (is_null($values['Photo'])): ?>
+<?php if (is_null($photo)): ?>
 null
 <?php else: ?>
 {
-	"id": <?php echo $values['Photo']->get('id') ?>,
-	"createdAt": "<?php echo $values['Photo']->get('created_at', 'd/m/Y H:i:s') ?>",
-	"updatedAt": "<?php echo is_null($values['Photo']->get('updated_at')) ? 'null' : $values['Photo']->get('updated_at', 'd/m/Y H:i:s') ?>"
+	"id": <?php echo $photo->get('id') ?>,
+	"createdAt": "<?php echo $photo->get('created_at', 'd/m/Y H:i:s') ?>",
+	"updatedAt": "<?php echo is_null($photo->get('updated_at')) ? 'null' : $photo->get('updated_at', 'd/m/Y H:i:s') ?>"
 }
 <?php endif ?>
