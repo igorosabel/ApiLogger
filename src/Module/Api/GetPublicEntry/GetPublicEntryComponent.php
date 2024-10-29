@@ -22,13 +22,13 @@ class GetPublicEntryComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id = $req->getParamInt('id');
 
 		if ($this->status === 'ok') {
-			$e = new Entry();
-			if ($e->find(['id' => $id])) {
-				if ($e->get('is_public')) {
+			$e = Entry::findOne(['id' => $id]);
+			if (!is_null($e)) {
+				if ($e->is_public) {
 					$this->entry->entry = $e;
 				}
 				else {

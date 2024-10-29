@@ -3,20 +3,13 @@
 namespace Osumi\OsumiFramework\App\Service;
 
 use Osumi\OsumiFramework\Core\OService;
-use Osumi\OsumiFramework\DB\ODB;
+use Osumi\OsumiFramework\ORM\ODB;
 use Osumi\OsumiFramework\App\Model\EntryTag;
 use Osumi\OsumiFramework\App\Model\Tag;
 use Osumi\OsumiFramework\App\Model\Entry;
 use Osumi\OsumiFramework\App\Model\Photo;
 
 class WebService extends OService {
-	/**
-	 * Load service tools
-	 */
-	function __construct() {
-		$this->loadService();
-	}
-
 	/**
 	 * Obtiene la lista de entradas de un usuario
 	 *
@@ -25,19 +18,7 @@ class WebService extends OService {
 	 * @return array Lista de entradas del usuario
 	 */
 	public function getEntries(int $id_user): array{
-		$db = new ODB();
-		$sql = "SELECT * FROM `entry` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
-		$db->query($sql, [$id_user]);
-		$list = [];
-
-		while ($res = $db->next()) {
-			$entry = new Entry();
-			$entry->update($res);
-
-			array_push($list, $entry);
-		}
-
-		return $list;
+		return Entry::where(['id_user' => $id_user], ['order_by' => 'updated_at#desc']);
 	}
 
 	/**
@@ -48,17 +29,12 @@ class WebService extends OService {
 	 * @return array Lista de tags del usuario
 	 */
 	public function getTags(int $id_user): array {
-		$db = new ODB();
-		$sql = "SELECT * FROM `tag` WHERE `id_user` = ? ORDER BY `updated_at` DESC";
-		$db->query($sql, [$id_user]);
+		$tags = Tag::where(['id_user' => $id_user], ['order_by' => 'updated_at#desc']);
 		$list = [];
 
-		while ($res = $db->next()) {
-			$tag = new Tag();
-			$tag->update($res);
+		foreach ($tags as $tag) {
 			$tag->loadNum();
-
-			array_push($list, $tag);
+			$list[] = $tag;
 		}
 
 		return $list;
@@ -79,39 +55,33 @@ class WebService extends OService {
 		$to_be_checked = [];
 		// Busco etiquetas de la entrada y las "marco" para borrar
 		foreach ($entry_tags as $entry_tag) {
-			$to_be_checked[$entry_tag->get('id')] = false;
+			$to_be_checked[$entry_tag->id] = false;
 		}
 
 		foreach ($tags as $t) {
-			$sql = "SELECT * FROM `tag` WHERE `id_user` = ? AND `name` = ?";
-			$db->query($sql, [$entry->get('id_user'), $t['name']]);
-
-			$tag = new Tag();
+			$tag = Tag::findOne(['id_user' => $entry->id_user, 'name' => $t['name']]);
 			// Busco la etiqueta, si no existe creo una nueva
 			//echo "Busco la etiqueta, si no existe creo una nueva.\n";
-			if ($res = $db->next()) {
-				$tag->update($res);
-				//echo "La etiqueta ".$tag->get('id')." existe.\n";
-			}
-			else {
-				$tag->set('id_user', $entry->get('id_user'));
-				$tag->set('name', $t['name']);
+			if (is_null($tag)) {
+				$tag = Tag::create();
+				$tag->id_user = $entry->id_user;
+				$tag->name    = $t['name'];
 				$tag->save();
-				//echo "Nueva etiqueta ".$tag->get('id')." creada.\n";
 			}
 
-			$et = new EntryTag();
+			$et = EntryTag::findOne(['id_entry' => $entry->id, 'id_tag' => $tag->id]);
 			// Si la entrada no tiene la etiqueta asociada se la añado
-			if (!$et->find(['id_entry'=>$entry->get('id'), 'id_tag'=>$tag->get('id')])) {
-				$et->set('id_entry', $entry->get('id'));
-				$et->set('id_tag', $tag->get('id'));
+			if (is_null($et)) {
+				$et = EntryTag::create();
+				$et->id_entry = $entry->id;
+				$et->id_tag   = $tag->id;
 				$et->save();
 				//echo "La etiqueta no tenía una entrada asociada.\n";
 			}
 
 			// Si la entrada ya tenía esta etiqueta asociada la marco para no borrarla
-			if (array_key_exists($tag->get('id'), $to_be_checked)) {
-				$to_be_checked[$tag->get('id')] = true;
+			if (array_key_exists($tag->id, $to_be_checked)) {
+				$to_be_checked[$tag->id] = true;
 			}
 		}
 
@@ -124,7 +94,7 @@ class WebService extends OService {
 		}
 
 		// Borro las etiquetas "huerfanas" que ya no estén asociadas a ninguna entrada
-		$this->cleanEmptyTags($entry->get('id_user'));
+		$this->cleanEmptyTags($entry->id_user);
 	}
 
 	/**
@@ -154,10 +124,8 @@ class WebService extends OService {
 		$list = [];
 
 		while ($res = $db->next()) {
-			$entry = new Entry();
-			$entry->update($res);
-
-			array_push($list, $entry);
+			$entry = Entry::from($res);
+			$list[] = $entry;
 		}
 
 		return $list;
@@ -173,11 +141,11 @@ class WebService extends OService {
 	 * @return array Datos de la foto en array
 	 */
 	public function addPhoto(Entry $entry, string $data): array {
-		$photo = new Photo();
-		$photo->set('id_entry', $entry->get('id'));
+		$photo = Photo::create();
+		$photo->id_entry = $entry->id;
 		$photo->save();
 
-		$route = $this->getConfig()->getDir('photos').$photo->get('id');
+		$route = $this->getConfig()->getDir('photos') . $photo->id;
 		file_put_contents($route, $data);
 
 		return $photo->toArray();
@@ -204,7 +172,7 @@ class WebService extends OService {
 			$day_str = $res['fecha'] < 10 ? '0'.$res['fecha'] : $res['fecha'];
 			$month_str = $month < 10 ? '0'.$month : $month;
 
-			array_push($list, $day_str.'-'.$month_str);
+			$list[] = $day_str . '-' . $month_str;
 		}
 
 		return $list;
@@ -234,7 +202,7 @@ class WebService extends OService {
 		else {
 			$sql = "SELECT * FROM `entry` WHERE `id_user` = ? AND MONTH(`created_at`) = ? AND YEAR(`created_at`) = ?";
 			if (count($tags) > 0) {
-				$sql .= " AND `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` IN (".implode(',', $tags)."))";
+				$sql .= " AND `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` IN (" . implode(',', $tags) . "))";
 			}
 			if (!is_null($day)) {
 				$sql .= " AND DAY(`created_at`) = ?";
@@ -247,10 +215,8 @@ class WebService extends OService {
 		$list = [];
 
 		while ($res = $db->next()) {
-			$entry = new Entry();
-			$entry->update($res);
-
-			array_push($list, $entry);
+			$entry = Entry::from($res);
+			$list[] = $entry;
 		}
 
 		return $list;

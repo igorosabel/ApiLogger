@@ -2,43 +2,35 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
 
 class Photo extends OModel {
-	function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id única de cada foto'
-			),
-			new OModelField(
-				name: 'id_entry',
-				type: OMODEL_NUM,
-				nullable: false,
-				default: null,
-				ref: 'entry.id',
-				comment: 'Id de la entrada en la que va la foto'
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				nullable: true,
-				default: null,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+	#[OPK(
+	  comment: 'Id única de cada foto'
+	)]
+	public ?int $id;
 
+	#[OField(
+	  comment: 'Id de la entrada en la que va la foto',
+	  nullable: false,
+	  ref: 'entry.id',
+	  default: null
+	)]
+	public ?int $id_entry;
 
-		parent::load($model);
-	}
+	#[OCreatedAt(
+	  comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+	  comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	/**
 	 * Obtiene el contenido de la foto
@@ -48,7 +40,7 @@ class Photo extends OModel {
 	public function getData(): string {
 		global $core;
 
-		$route = $core->config->getDir('photos').$this->get('id');
+		$route = $core->config->getDir('photos') . $this->id;
 		return file_get_contents($route);
 	}
 
@@ -60,7 +52,7 @@ class Photo extends OModel {
 	public function deleteFull(): bool {
 		global $core;
 
-		$route = $core->config->getDir('photos').$this->get('id');
+		$route = $core->config->getDir('photos') . $this->id;
 		if (file_exists($route)) {
 			unlink($route);
 			$this->delete();

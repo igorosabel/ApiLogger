@@ -2,51 +2,44 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
-use Osumi\OsumiFramework\DB\ODB;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
+use Osumi\OsumiFramework\ORM\ODB;
 
 class Tag extends OModel {
-	function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id única de la etiqueta'
-			),
-			new OModelField(
-				name: 'id_user',
-				type: OMODEL_NUM,
-				nullable: false,
-				default: null,
-				ref: 'user.id',
-				comment: 'Id del usuario que crea la etiqueta'
-			),
-			new OModelField(
-				name: 'name',
-				type: OMODEL_TEXT,
-				nullable: false,
-				default: null,
-				size: 100,
-				comment: 'Texto de la etiqueta'
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				nullable: true,
-				default: null,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+	#[OPK(
+	  comment: 'Id única de la etiqueta'
+	)]
+	public ?int $id;
 
-		parent::load($model);
-	}
+	#[OField(
+	  comment: 'Id del usuario que crea la etiqueta',
+	  nullable: false,
+	  ref: 'user.id',
+	  default: null
+	)]
+	public ?int $id_user;
+
+	#[OField(
+	  comment: 'Texto de la etiqueta',
+	  nullable: false,
+	  max: 100,
+	  default: null
+	)]
+	public ?string $name;
+
+	#[OCreatedAt(
+	  comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+	  comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	private ?bool $is_public = null;
 
@@ -54,13 +47,12 @@ class Tag extends OModel {
 		if (is_null($this->is_public)) {
 			$db = new ODB();
 			$sql = "SELECT * FROM `entry` WHERE `id` IN (SELECT `id_entry` FROM `entry_tag` WHERE `id_tag` = ?) LIMIT 0,1";
-			$db->query($sql, [$this->get('id')]);
+			$db->query($sql, [$this->id]);
 
 			$res = $db->next();
-			$entry = new Entry();
-			$entry->update($res);
+			$entry = Entry::from($res);
 
-			$this->is_public = $entry->get('is_public');
+			$this->is_public = $entry->is_public;
 		}
 
 		return $this->is_public;
@@ -77,11 +69,8 @@ class Tag extends OModel {
 	}
 
 	public function loadNum(): void {
-		$db = new ODB();
-		$sql = "SELECT COUNT(*) AS `num` FROM `entry_tag` WHERE `id_tag` = ?";
-		$db->query($sql, [$this->get('id')]);
-		$res = $db->next();
-		$this->setNum($res['num']);
+		$num = EntryTag::count(['id_tag' => $this->id]);
+		$this->setNum($num);
 	}
 
 	/**
@@ -91,9 +80,9 @@ class Tag extends OModel {
 	 */
 	public function toArray(): array {
 		return [
-			'id'        => $this->get('id'),
-			'name'      => $this->get('name'),
-			'slug'      => $this->get('slug'),
+			'id'        => $this->id,
+			'name'      => $this->name,
+			'slug'      => $this->slug,
 			'createdAt' => $this->get('created_at', 'd/m/Y'),
 			'updatedAt' => $this->get('updated_at', 'd/m/Y')
 		];

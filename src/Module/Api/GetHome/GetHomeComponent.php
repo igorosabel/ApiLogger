@@ -29,19 +29,19 @@ class GetHomeComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(HomeDTO $data):void {
+	public function run(HomeDTO $data): void {
 		if (!$data->isValid()) {
 			$this->status = 'error';
 		}
 
 		if  ($this->status === 'ok') {
-			$calendar_list = $this->ws->getCalendar($data->getIdUser(), $data->getMonth(), $data->getYear());
+			$calendar_list = $this->ws->getCalendar($data->id_user, $data->month, $data->year);
 			if (count($calendar_list) > 0) {
 				$this->calendar = '"' . implode('", "', $calendar_list) . '"';
 			}
 
-			$this->entries->list = $this->ws->getHomeEntries($data->getIdUser(), $data->getDay(), $data->getMonth(), $data->getYear(), $data->getTags(), $data->getFirst());
-			$this->tags->list = $this->ws->getTags($data->getIdUser());
+			$this->entries->list = $this->ws->getHomeEntries($data->id_user, $data->day, $data->month, $data->year, $data->tags, $data->first);
+			$this->tags->list = $this->ws->getTags($data->id_user);
 		}
 	}
 }

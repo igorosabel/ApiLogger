@@ -24,7 +24,7 @@ class SaveEntryComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id        = $req->getParamInt('id');
 		$title     = $req->getParamString('title');
 		$body      = $req->getParamString('body');
@@ -37,14 +37,14 @@ class SaveEntryComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$entry = new Entry();
+			$entry = Entry::create();
 			if (!is_null($id)) {
-				$entry->find(['id' => $id]);
+				$entry = Entry::findOne(['id' => $id]);
 			}
-			$entry->set('id_user',   $filter['id']);
-			$entry->set('title',     $title);
-			$entry->set('body',      $body);
-			$entry->set('is_public', $is_public);
+			$entry->id_user   = $filter['id'];
+			$entry->title     = $title;
+			$entry->body      = $body;
+			$entry->is_public = $is_public;
 			$entry->save();
 
 			$this->ws->saveTags($entry, $tags);

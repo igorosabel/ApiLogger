@@ -2,64 +2,58 @@
 
 namespace Osumi\OsumiFramework\App\Model;
 
-use Osumi\OsumiFramework\DB\OModel;
-use Osumi\OsumiFramework\DB\OModelGroup;
-use Osumi\OsumiFramework\DB\OModelField;
-use Osumi\OsumiFramework\DB\ODB;
+use Osumi\OsumiFramework\ORM\OModel;
+use Osumi\OsumiFramework\ORM\OPK;
+use Osumi\OsumiFramework\ORM\OField;
+use Osumi\OsumiFramework\ORM\OCreatedAt;
+use Osumi\OsumiFramework\ORM\OUpdatedAt;
+use Osumi\OsumiFramework\ORM\ODB;
 use Osumi\OsumiFramework\App\Model\Tag;
 
 class Entry extends OModel {
-	function __construct() {
-		$model = new OModelGroup(
-			new OModelField(
-				name: 'id',
-				type: OMODEL_PK,
-				comment: 'Id única de cada entrada'
-			),
-			new OModelField(
-				name: 'id_user',
-				type: OMODEL_NUM,
-				nullable: false,
-				ref: 'user.id',
-				comment: 'Id del usuario que crea la entrada'
-			),
-			new OModelField(
-				name: 'title',
-				type: OMODEL_TEXT,
-				nullable: false,
-				size: 100,
-				comment: 'Título de la entrada'
-			),
-			new OModelField(
-				name: 'body',
-				type: OMODEL_LONGTEXT,
-				nullable: true,
-				default: null,
-				comment: 'Cuerpo de la entrada'
-			),
-			new OModelField(
-				name: 'is_public',
-				type: OMODEL_BOOL,
-				nullable: false,
-				default: false,
-				comment: 'Indica si la entrada es pública 1 o no 0'
-			),
-			new OModelField(
-				name: 'created_at',
-				type: OMODEL_CREATED,
-				comment: 'Fecha de creación del registro'
-			),
-			new OModelField(
-				name: 'updated_at',
-				type: OMODEL_UPDATED,
-				nullable: true,
-				default: null,
-				comment: 'Fecha de última modificación del registro'
-			)
-		);
+	#[OPK(
+	  comment: 'Id única de cada entrada'
+	)]
+	public ?int $id;
 
-		parent::load($model);
-	}
+	#[OField(
+	  comment: 'Id del usuario que crea la entrada',
+	  nullable: false,
+	  ref: 'user.id'
+	)]
+	public ?int $id_user;
+
+	#[OField(
+	  comment: 'Título de la entrada',
+	  nullable: false,
+	  max: 100
+	)]
+	public ?string $title;
+
+	#[OField(
+	  comment: 'Cuerpo de la entrada',
+	  nullable: true,
+	  default: null,
+	  type: OField::LONGTEXT
+	)]
+	public ?string $body;
+
+	#[OField(
+	  comment: 'Indica si la entrada es pública 1 o no 0',
+	  nullable: false,
+	  default: false
+	)]
+	public ?bool $is_public;
+
+	#[OCreatedAt(
+	  comment: 'Fecha de creación del registro'
+	)]
+	public ?string $created_at;
+
+	#[OUpdatedAt(
+	  comment: 'Fecha de última modificación del registro'
+	)]
+	public ?string $updated_at;
 
 	private ?array $tags = null;
 
@@ -94,14 +88,12 @@ class Entry extends OModel {
 	public function loadTags(): void {
 		$db = new ODB();
 		$sql = "SELECT * FROM `tag` WHERE `id` IN (SELECT `id_tag` FROM `entry_tag` WHERE `id_entry` = ?) ORDER BY `name` ASC";
-		$db->query($sql, [$this->get('id')]);
+		$db->query($sql, [$this->id]);
 		$list = [];
 
 		while ($res = $db->next()) {
-			$tag = new Tag();
-			$tag->update($res);
-
-			array_push($list, $tag);
+			$tag = Tag::from($res);
+			$list[] = $tag;
 		}
 
 		$this->setTags($list);
@@ -138,18 +130,7 @@ class Entry extends OModel {
 	 * @return void
 	 */
 	public function loadPhotos(): void {
-		$db = new ODB();
-		$sql = "SELECT * FROM `photo` WHERE `id_entry` = ?";
-		$db->query($sql, [$this->get('id')]);
-		$list = [];
-
-		while ($res = $db->next()) {
-			$photo = new Photo();
-			$photo->update($res);
-
-			array_push($list, $photo);
-		}
-
+		$list = Photo::where(['id_entry' => $this->id]);
 		$this->setPhotos($list);
 	}
 
@@ -161,7 +142,7 @@ class Entry extends OModel {
 	public function deleteFull(): void {
 		$db = new ODB();
 		$sql = "DELETE FROM `entry_tag` WHERE `id_entry` = ?";
-		$db->query($sql, [$this->get('id')]);
+		$db->query($sql, [$this->id]);
 		$this->delete();
 	}
 }

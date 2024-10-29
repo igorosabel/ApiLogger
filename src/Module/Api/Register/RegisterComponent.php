@@ -23,7 +23,7 @@ class RegisterComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$username   = $req->getParamString('username');
 		$pass       = $req->getParamString('pass');
 
@@ -32,16 +32,17 @@ class RegisterComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$u = new User();
-			if ($u->find(['username' => $username])) {
+			$u = User::findOne(['username' => $username]);
+			if (!is_null($u)) {
 				$this->status = 'error';
 			}
 			else {
-				$u->set('username', $username);
-				$u->set('pass', password_hash($pass, PASSWORD_BCRYPT));
+        $u = User::create();
+				$u->username = $username;
+				$u->pass     = password_hash($pass, PASSWORD_BCRYPT);
 				$u->save();
 
-				$id = $u->get('id');
+				$id = $u->id;
 
 				$tk = new OToken($this->getConfig()->getExtra('secret'));
 				$tk->addParam('id', $id);

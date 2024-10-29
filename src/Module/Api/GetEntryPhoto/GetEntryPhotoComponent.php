@@ -16,7 +16,7 @@ class GetEntryPhotoComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id = $req->getParamInt('id');
 
 		if (is_null($id)) {
@@ -24,8 +24,8 @@ class GetEntryPhotoComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$p = new Photo();
-			if ($p->find(['id' => $id])) {
+			$p = Photo::findOne(['id' => $id]);
+			if (!is_null($p)) {
 				$this->photo = '"' . trim($p->getData()) . '"';
 			}
 			else {

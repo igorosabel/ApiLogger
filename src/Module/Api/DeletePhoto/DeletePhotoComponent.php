@@ -15,7 +15,7 @@ class DeletePhotoComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id = $req->getParamInt('id');
 
 		if (is_null($id)) {
@@ -23,8 +23,8 @@ class DeletePhotoComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$photo = new Photo();
-			if ($photo->find(['id' => $id])) {
+			$photo = Photo::findOne(['id' => $id]);
+			if (!is_null($photo)) {
 				$photo->deleteFull();
 			}
 			else {

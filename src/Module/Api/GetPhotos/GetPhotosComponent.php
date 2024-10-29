@@ -22,7 +22,7 @@ class GetPhotosComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id     = $req->getParamInt('id');
 		$filter = $req->getFilter('Login');
 
@@ -31,9 +31,9 @@ class GetPhotosComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$entry = new Entry();
-			if ($entry->find(['id' => $id])) {
-				if ($entry->get('id_user') === $filter['id']) {
+			$entry = Entry::findOne(['id' => $id]);
+			if (!is_null($entry)) {
+				if ($entry->id_user === $filter['id']) {
 					$this->list->list = $entry->getPhotos();
 				}
 				else {

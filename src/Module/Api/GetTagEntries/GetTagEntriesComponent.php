@@ -38,8 +38,7 @@ class GetTagEntriesComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$t = new Tag();
-			$t->find(['id' => $id]);
+			$t = Tag::findOne(['id' => $id]);
 			$this->tag->tag = $t;
 			$this->list->list = $this->ws->getTagEntries($id);
 		}

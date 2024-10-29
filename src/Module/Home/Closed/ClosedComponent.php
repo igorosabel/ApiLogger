@@ -13,7 +13,7 @@ class ClosedComponent extends OAction {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		OUrl::goToUrl('https://logger.osumi.es');
 	}
 }

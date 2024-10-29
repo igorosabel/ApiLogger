@@ -26,7 +26,7 @@ class UploadPhotoComponent extends OComponent {
 	 * @param ORequest $req Request object with method, headers, parameters and filters used
 	 * @return void
 	 */
-	public function run(ORequest $req):void {
+	public function run(ORequest $req): void {
 		$id_entry = $req->getParamInt('id');
 		$photo = $req->getParamString('photo');
 
@@ -35,8 +35,8 @@ class UploadPhotoComponent extends OComponent {
 		}
 
 		if ($this->status === 'ok') {
-			$entry = new Entry();
-			if ($entry->find(['id' => $id_entry])) {
+			$entry = Entry::findOne(['id' => $id_entry]);
+			if (!is_null($entry)) {
 				$result = $this->ws->addPhoto($entry, $photo);
 
 				$this->id         = $result['id'];
